@@ -2,6 +2,7 @@
 // English lives in the HTML; Korean strings are keyed by data-i18n below.
 (() => {
   const KO = {
+    'release.notice': '출시 준비 중 — Gori는 현재 비공개 개발 중입니다. 아래에서 제품 미리보기를 살펴보세요. 저장소와 공개 버전은 아직 제공되지 않습니다.',
     'launch.status': '출시 준비 중',
     'launch.title': '한국의 서비스와<br>AI 에이전트를 연결합니다.',
     'launch.body': 'Gori는 AI 에이전트가 네이버, 카카오 등 한국의 서비스를 활용할 수 있도록 만드는 도구 계층입니다.',
@@ -30,7 +31,7 @@
     'how.s3.t': '에이전트에서 도구 호출', 'how.s3.d': '카탈로그를 에이전트에 도구로 제공하고 호출을 Gori로 전달하세요. 입력값은 각 도구의 JSON Schema로 검증됩니다. MCP 지원은 준비 중입니다.',
     'feat.eyebrow': '구성', 'feat.title': '지금 제공하는 것과 다음에 올 것.',
     'feat.lede': '각 항목에 실제 상태를 표시했습니다. Gori는 초기 단계이며, 그 사실을 숨기지 않습니다.',
-    'st.ok': '제공 중', 'st.plan': '예정', 'st.soon': '준비 중',
+    'st.ok': '출시 준비 중', 'st.plan': '예정', 'st.soon': '준비 중',
     'feat.core': '도구 탐색, 입력 검증, 요청 인가, 제공자 API 호출. 고정된 도구 ID와 snake_case 오류 코드를 제공합니다.',
     'feat.infra.t': '내 인프라에서 실행', 'feat.infra': 'Docker와 Cloudflare Workers가 하나의 코어를 공유합니다. SQLite, PostgreSQL, D1 스토리지 어댑터를 지원합니다.',
     'feat.vault': '갱신과 폐기를 지원하는 암호화된 인증 정보와 OAuth 연결. 현재는 환경 변수에서 인증 정보를 읽습니다.',

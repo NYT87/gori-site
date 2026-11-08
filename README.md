@@ -44,4 +44,6 @@ AGPL-3.0-only; see LICENSE. Preserves the original Gori license.
 
 ## Pre-release publishing
 
-The default build publishes a coming-soon showcase, including the original Gori README banner. All previous docs, pricing, and agent URLs show the announcement while the platform is private. No private repository links or setup instructions are published. The earlier templates and documentation remain in source for future release; buildPreview is only used by their tests.
+The full site remains browsable: agents, connection guides, pricing, and documentation.
+A coming-soon notice identifies the private development stage. The build replaces private platform repository links with coming-soon labels.
+The homepage adapts the original code-generated Gori README banner using the active theme colors, including explicit theme overrides and system preference.

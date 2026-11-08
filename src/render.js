@@ -85,7 +85,7 @@ const li = (key, text, kind = 'check') => `<li${kind === 'later' ? ' class="late
 export function pricingCards(root) {
   return `<div class="plans">
   <article class="plan featured" aria-labelledby="plan-self">
-    <div class="plan-top"><h3 id="plan-self" data-i18n="plan.self.t">Self-hosted</h3><span class="status ok" data-i18n="st.ok">Available</span></div>
+    <div class="plan-top"><h3 id="plan-self" data-i18n="plan.self.t">Self-hosted</h3><span class="status ok" data-i18n="st.ok">Coming soon</span></div>
     <div class="price"><strong data-i18n="plan.self.price">Free</strong><span>AGPL-3.0-only</span></div>
     <p data-i18n="plan.self.d">Everything in the repository, on your Cloudflare account or Docker host.</p>
     <ul>
@@ -178,6 +178,7 @@ export function layout({ title, description, root, page, body, path }) {
   <nav class="nav-mobile" aria-label="Primary mobile"><div class="wrap">${nav}<a href="${REPO}">GitHub</a></div></nav>
 </header>
 <main id="main">
+<div class="release-notice wrap" role="note" data-i18n="release.notice">Coming soon — Gori is in private development. Explore the preview below; the repository and public release are not available yet.</div>
 ${body}
 </main>
 <footer>

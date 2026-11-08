@@ -319,3 +319,14 @@ footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .compare.small { min-width: 560px; }
 .compare.small tbody th { width: 34%; }
 .compare code { font-size: 13.5px; }
+
+/* Original README banner composition, using the active light/dark palette. */
+.release-notice { padding-block: 18px; color: var(--mist); font-size: 14px; }
+.brand-banner { display: flex; align-items: center; justify-content: space-between; gap: 32px;
+  margin-block: 24px; padding: clamp(24px, 5vw, 64px); background: var(--bg); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 12px; }
+.brand-banner .wordmark { font-size: 30px; }
+.banner-title { margin-block: 14px; font-size: clamp(22px, 4vw, 50px); font-weight: 600; line-height: 1.08; letter-spacing: -.02em; }
+.banner-ko { color: var(--mist); font-size: clamp(14px, 2vw, 24px); }
+.brand-banner svg { width: clamp(80px, 17vw, 200px); flex-shrink: 0; }
+@media (max-width: 480px) { .brand-banner { gap: 16px; padding: 20px; } .brand-banner svg { width: 64px; } }
