@@ -1,0 +1,137 @@
+<section class="page-hero" aria-labelledby="agents-h">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="agents.eyebrow">For agents</div>
+    <h1 id="agents-h" data-i18n="agents.title">Korean services, as tools your agent can call.</h1>
+    <p class="lede" data-i18n="agents.lede">Gori turns Naver, Kakao, and more into typed tools with JSON Schemas and stable error codes. Your agent discovers them, calls them, and reads the results, with no glue code per provider.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="{{root}}docs/agents.html"><span data-i18n="agents.cta.guide">Read the agent guide</span>{{icon.arrow}}</a>
+      <a class="btn btn-secondary" href="{{repo}}" data-i18n="cta.github">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="loop-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="agents.loop.eyebrow">The loop</div>
+      <h2 class="h2" id="loop-h" data-i18n="agents.loop.title">How an agent uses Gori</h2>
+    </div>
+    <div class="steps four">
+      <div class="step">
+        <div class="step-n">01</div>
+        <h3 data-i18n="agents.l1.t">Discover</h3>
+        <p data-i18n="agents.l1.d">Fetch the catalog. Every tool has an ID, a description, and a JSON Schema for its input.</p>
+        <div class="snippet">GET /v1/tools</div>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <h3 data-i18n="agents.l2.t">Offer</h3>
+        <p data-i18n="agents.l2.d">Pass the tools to your model as tool definitions. The schemas drop in unchanged.</p>
+        <div class="snippet">kakao_search_places</div>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <h3 data-i18n="agents.l3.t">Call</h3>
+        <p data-i18n="agents.l3.d">When the model picks a tool, send its arguments to Gori. Gori validates them and calls the provider.</p>
+        <div class="snippet">POST /v1/tools/{id}/execute</div>
+      </div>
+      <div class="step">
+        <div class="step-n">04</div>
+        <h3 data-i18n="agents.l4.t">Return</h3>
+        <p data-i18n="agents.l4.d">Hand the result back to the model: provider data, or an error code it can act on.</p>
+        <div class="snippet">{ "data": … }
+{ "error": "invalid_input" }</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="paths-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="agents.paths.eyebrow">Connect</div>
+      <h2 class="h2" id="paths-h" data-i18n="agents.paths.title">Two ways to connect your agent</h2>
+    </div>
+    <div class="paths">
+      <article class="path">
+        <div class="feature-top"><h3 data-i18n="agents.http.t">Tool calling over HTTP</h3><span class="status ok" data-i18n="st.ok">Available</span></div>
+        <p data-i18n="agents.http.d">Works today with Claude, OpenAI, or any model with tool use. Map each catalog tool to a tool definition and forward calls to the execute route.</p>
+        <div class="cmd">
+          <div class="cmd-head"><span>agent.js</span>
+            <button class="icon-btn copy" type="button" data-copy-from="code-http" aria-label="Copy example">{{icon.copy}}</button></div>
+<pre id="code-http">const { tools: catalog } = await (await fetch(`${GORI}/v1/tools`, { headers })).json();
+
+const tools = catalog.map((tool) =&gt; betaTool({
+  name: tool.id.replaceAll(".", "_"),
+  description: tool.description,
+  inputSchema: tool.inputSchema,
+  run: async (input) =&gt; JSON.stringify(await (await fetch(
+    `${GORI}/v1/tools/${tool.id}/execute`,
+    { method: "POST", headers, body: JSON.stringify(input) },
+  )).json()),
+}));
+
+const message = await client.beta.messages.toolRunner({
+  model: "claude-opus-5-5", max_tokens: 16000, tools,
+  messages: [{ role: "user", content: "Find three cafés in Seongsu-dong." }],
+});</pre>
+        </div>
+        <a class="more-link" href="{{root}}docs/agents.html#tool-calling-over-http"><span data-i18n="agents.http.more">Full example with setup</span>{{icon.arrow}}</a>
+      </article>
+      <article class="path">
+        <div class="feature-top"><h3 data-i18n="agents.mcp.t">MCP server</h3><span class="status planned" data-i18n="st.soon">Coming soon</span></div>
+        <p data-i18n="agents.mcp.d">Connect Claude Code, Cursor, or any MCP client to your Gori URL with your Gori key. Tools appear in the agent with no code. Runs on Docker and Cloudflare Workers.</p>
+        <div class="cmd">
+          <div class="cmd-head"><span data-i18n="agents.mcp.preview">Planned setup · preview</span>
+            <button class="icon-btn copy" type="button" data-copy-from="code-mcp" aria-label="Copy command">{{icon.copy}}</button></div>
+<pre id="code-mcp">claude mcp add --transport http gori \
+  https://&lt;your-gori&gt;/mcp \
+  --header "Authorization: Bearer &lt;key&gt;"</pre>
+        </div>
+        <p class="path-note" data-i18n="agents.mcp.note">Designed, not released yet. Until it ships, use tool calling over HTTP; the tool names and errors will match.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="errors-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="agents.err.eyebrow">Recovery</div>
+      <h2 class="h2" id="errors-h" data-i18n="agents.err.title">Errors your model can act on</h2>
+      <p class="lede" data-i18n="agents.err.lede">Gori answers with stable snake_case codes instead of raw provider errors, so the model can tell what went wrong and what to do next.</p>
+    </div>
+    <div class="compare-wrap">
+      <table class="compare small">
+        <thead><tr><th scope="col" data-i18n="agents.err.code">Code</th><th scope="col" data-i18n="agents.err.means">What it means for the agent</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>invalid_input</code></th><td data-i18n="agents.err.e1">The arguments don't match the tool's schema. Fix them and call again.</td></tr>
+          <tr><th scope="row"><code>unknown_tool</code></th><td data-i18n="agents.err.e2">The tool ID isn't in the catalog. Re-read the tool list.</td></tr>
+          <tr><th scope="row"><code>provider_not_configured</code></th><td data-i18n="agents.err.e3">The operator hasn't added credentials for this provider. Tell the user; retrying won't help.</td></tr>
+          <tr><th scope="row"><code>provider_error</code> (429)</th><td data-i18n="agents.err.e4">The provider's rate limit was reached. Wait, then retry.</td></tr>
+          <tr><th scope="row"><code>provider_unavailable</code></th><td data-i18n="agents.err.e5">The provider didn't respond in time. Retry later.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <a class="more-link" href="{{root}}docs/api.html#error-codes"><span data-i18n="agents.err.more">All error codes</span>{{icon.arrow}}</a>
+  </div>
+</section>
+
+<section aria-labelledby="noagent-h">
+  <div class="wrap head" style="margin-bottom:0">
+    <div class="eyebrow" data-i18n="agents.api.eyebrow">No agent?</div>
+    <h2 class="h2" id="noagent-h" data-i18n="agents.api.title">It's a plain HTTP API too.</h2>
+    <p class="lede" data-i18n="agents.api.lede">Agents are who Gori is built for, but scripts, backends, and cron jobs can call the same routes with any HTTP client.</p>
+    <div class="cmd" style="max-width:760px">
+      <div class="cmd-head"><span>curl</span>
+        <button class="icon-btn copy" type="button" data-copy-from="code-curl" aria-label="Copy command">{{icon.copy}}</button></div>
+<pre id="code-curl">curl localhost:3000/v1/tools/kakao.search_places/execute \
+  -H "Authorization: Bearer $GORI_API_KEY" \
+  -H 'Content-Type: application/json' -d '{"query":"성수 카페"}'</pre>
+    </div>
+    <div class="ctas">
+      <a class="btn btn-primary" href="{{root}}docs/api.html"><span data-i18n="agents.api.cta">HTTP API reference</span>{{icon.arrow}}</a>
+      <a class="btn btn-secondary" href="{{root}}index.html#deploy" data-i18n="cta.selfhost">Self-host Gori</a>
+    </div>
+  </div>
+</section>

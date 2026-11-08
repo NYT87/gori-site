@@ -1,0 +1,83 @@
+<section class="page-hero" aria-labelledby="pricing-h">
+  <div class="wrap">
+    <div class="eyebrow" data-i18n="price.eyebrow">Pricing</div>
+    <h1 id="pricing-h" data-i18n="pricing.title">Self-hosting is free. It stays free.</h1>
+    <p class="lede" data-i18n="pricing.lede">Gori is open source under AGPL-3.0. A managed Cloud and team support are optional; we'll publish their prices here once they're set.</p>
+  </div>
+</section>
+
+<section aria-label="Plans">
+  <div class="wrap">
+    {{pricing_cards}}
+    <p class="pricing-note" data-i18n="price.note">Provider usage (Naver, Kakao) is billed by each provider under your own application and is not part of Gori pricing.</p>
+  </div>
+</section>
+
+<section aria-labelledby="cmp-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="cmp.eyebrow">Compare</div>
+      <h2 class="h2" id="cmp-h" data-i18n="cmp.title">Compare plans</h2>
+    </div>
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr><th scope="col" data-i18n="cmp.feature">Feature</th><th scope="col" data-i18n="cmp.self">Self-hosted</th><th scope="col">Gori Cloud</th><th scope="col" data-i18n="cmp.sup">Support</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" data-i18n="cmp.price">Price</th><td class="yes" data-i18n="cmp.price.self">Free</td><td data-i18n="cmp.price.cloud">TBA</td><td data-i18n="cmp.price.sup">Custom</td></tr>
+          <tr><th scope="row" data-i18n="cmp.tools">Tool catalog (Naver, Kakao)</th><td class="yes"><span class="cell">{{icon.check}}<span>naver · kakao</span></span></td><td><span class="cell">{{icon.later}}<span data-i18n="cmp.tools.cloud">Planned</span></span></td><td class="yes"><span class="cell">{{icon.check}}<span>naver · kakao</span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.where">Where it runs</th><td data-i18n="cmp.where.self">Your Cloudflare or Docker</td><td data-i18n="cmp.where.cloud">Hosted by Gori</td><td data-i18n="cmp.where.sup">Your infrastructure</td></tr>
+          <tr><th scope="row" data-i18n="cmp.ops">Operations and upgrades</th><td data-i18n="cmp.ops.self">You run it</td><td data-i18n="cmp.ops.cloud">Managed (planned)</td><td data-i18n="cmp.ops.sup">We help</td></tr>
+          <tr><th scope="row" data-i18n="cmp.dash">Dashboard (English and Korean)</th><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.vault">OAuth connections (Vault)</th><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.usage">Usage reporting and quotas</th><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td><td><span class="cell">{{icon.later}}<span data-i18n="cmp.planned">Planned</span></span></td><td data-i18n="cmp.na">Not applicable</td></tr>
+          <tr><th scope="row" data-i18n="cmp.help">Where to get help</th><td data-i18n="cmp.help.self">GitHub issues</td><td data-i18n="cmp.help.cloud">TBA</td><td data-i18n="cmp.help.sup">Direct, in English or Korean</td></tr>
+          <tr><th scope="row" data-i18n="cmp.lic">License</th><td>AGPL-3.0-only</td><td data-i18n="cmp.lic.cloud">Service terms TBA</td><td>AGPL-3.0-only</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="faq-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow">FAQ</div>
+      <h2 class="h2" id="faq-h" data-i18n="faq.title">Pricing questions</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary><span data-i18n="faq.q1">Is the self-hosted edition really free?</span>{{icon.plus}}</summary>
+        <p data-i18n="faq.a1">Yes. Gori is licensed under AGPL-3.0-only. You can run, study, and change it at no cost. You pay only for your own hosting and any provider fees.</p>
+      </details>
+      <details>
+        <summary><span data-i18n="faq.q2">What does the AGPL mean for my company?</span>{{icon.plus}}</summary>
+        <p data-i18n="faq.a2">Using Gori unmodified, including from closed-source agents that call its API, adds no obligations to your code. If you modify Gori and let others use it over a network, you must offer them your modified source. Ask your counsel for your specific case.</p>
+      </details>
+      <details>
+        <summary><span data-i18n="faq.q5">Who pays for Naver and Kakao API usage?</span>{{icon.plus}}</summary>
+        <p data-i18n="faq.a5">You call providers with your own application and credentials, so each provider bills your account. Gori adds nothing on top of provider fees.</p>
+      </details>
+      <details>
+        <summary><span data-i18n="faq.q3">When will Gori Cloud launch?</span>{{icon.plus}}</summary>
+        <p data-i18n="faq.a3">There is no date yet. The developer API comes first, then the dashboard. Watch the repository or email us and we'll let you know.</p>
+      </details>
+      <details>
+        <summary><span data-i18n="faq.q4">Do I need a Gori account to self-host?</span>{{icon.plus}}</summary>
+        <p data-i18n="faq.a4">No. A self-hosted deployment never contacts a Gori service. Your provider credentials and data stay on your infrastructure.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="cta-h">
+  <div class="wrap head" style="margin-bottom:0">
+    <h2 class="h2" id="cta-h" data-i18n="cta.title">Self-host Gori today.</h2>
+    <p class="lede" data-i18n="cta.body">Deploy to Docker or Cloudflare Workers and make your first tool call in minutes.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="{{root}}index.html#deploy"><span data-i18n="cta.selfhost">Self-host Gori</span>{{icon.arrow}}</a>
+      <a class="btn btn-secondary" href="{{root}}docs/index.html" data-i18n="cta.docs">Read the docs</a>
+    </div>
+  </div>
+</section>

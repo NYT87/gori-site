@@ -1,0 +1,19 @@
+{
+  "name": "gori-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Public website (homepage, pricing, docs) built to static HTML for GitHub Pages.",
+  "license": "AGPL-3.0-only",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node src/build.js",
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/build.js && node --check src/render.js && node --check src/client.js"
+  },
+  "devDependencies": {
+    "marked": "15.0.12"
+  }
+}

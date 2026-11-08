@@ -1,0 +1,199 @@
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="eyebrow" data-i18n="hero.eyebrow">Open source · AGPL-3.0</div>
+      <h1 data-i18n="hero.title">Korean services.<br>Connected to your agents.</h1>
+      <p class="sub" data-i18n="hero.sub">The tool layer for AI agents. Naver and Kakao as typed tools your agent calls over MCP or a plain HTTP API, on your own Cloudflare account or Docker host.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#deploy"><span data-i18n="cta.selfhost">Self-host Gori</span>{{icon.arrow}}</a>
+        <a class="btn btn-secondary" href="{{repo}}" data-i18n="cta.github">View on GitHub</a>
+      </div>
+      <div class="meta">
+        <span>Docker</span><span>Cloudflare Workers</span><span data-i18n="hero.noacct">No Gori account needed</span>
+      </div>
+    </div>
+    <div class="term" aria-label="Example request and response">
+      <div class="term-bar">
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="tabs" role="tablist" aria-label="Example tool">
+          <button type="button" role="tab" data-tab="kakao" aria-selected="true" aria-controls="term-code">kakao.search_places</button>
+          <button type="button" role="tab" data-tab="naver" aria-selected="false" aria-controls="term-code">naver.search_news</button>
+        </div>
+        <button class="icon-btn copy" type="button" data-copy-from="term-code" aria-label="Copy example">{{icon.copy}}</button>
+      </div>
+<pre id="term-code" role="tabpanel" tabindex="0"><span class="t-c"># Call a tool from any agent or app</span>
+<span class="t-g">curl</span> localhost:3000/v1/tools/<span class="t-k">kakao.search_places</span>/execute \
+  -H <span class="t-s">"Authorization: Bearer $GORI_API_KEY"</span> \
+  -H <span class="t-s">'Content-Type: application/json'</span> \
+  -d <span class="t-s">'{"query":"성수 카페"}'</span></pre>
+    </div>
+  </div>
+</section>
+
+<section id="agents" aria-labelledby="agents-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="home.agents.eyebrow">Built for agents</div>
+      <h2 class="h2" id="agents-h" data-i18n="home.agents.title">Made for agents to call. Simple enough for any script.</h2>
+      <p class="lede" data-i18n="home.agents.lede">Every tool has a stable ID, a JSON Schema, and readable error codes, so a model can find the right tool, call it, and recover on its own.</p>
+    </div>
+    <div class="agent-grid">
+      <a class="agent-card" href="{{root}}agents.html">
+        <div class="feature-top"><h3 data-i18n="home.agents.mcp.t">MCP server</h3><span class="status planned" data-i18n="st.soon">Coming soon</span></div>
+        <p data-i18n="home.agents.mcp.d">Point Claude Code, Cursor, or any MCP client at your Gori URL. Tools show up in the agent, no code needed.</p>
+        <code>claude mcp add --transport http gori …/mcp</code>
+      </a>
+      <a class="agent-card" href="{{root}}agents.html">
+        <div class="feature-top"><h3 data-i18n="home.agents.tools.t">Tool calling</h3><span class="status ok" data-i18n="st.ok">Available</span></div>
+        <p data-i18n="home.agents.tools.d">The catalog's JSON Schemas drop straight into Claude or OpenAI tool definitions. Forward each call to Gori.</p>
+        <code>GET /v1/tools → tools: [...]</code>
+      </a>
+      <a class="agent-card" href="{{root}}docs/api.html">
+        <div class="feature-top"><h3 data-i18n="home.agents.api.t">Plain HTTP API</h3><span class="status ok" data-i18n="st.ok">Available</span></div>
+        <p data-i18n="home.agents.api.d">No agent? Scripts, backends, and cron jobs call the same routes with any HTTP client.</p>
+        <code>POST /v1/tools/{id}/execute</code>
+      </a>
+    </div>
+    <a class="more-link" href="{{root}}agents.html"><span data-i18n="home.agents.more">How agents connect to Gori</span>{{icon.arrow}}</a>
+  </div>
+</section>
+
+<section class="name" aria-labelledby="name-h">
+  <div class="wrap">
+    <div class="ring" aria-hidden="true">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="232.9 282.7" transform="rotate(-11.7 50 50)"/><circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="31.1 282.7" transform="rotate(-64.8 50 50)"/></svg>
+    </div>
+    <div class="name-copy">
+      <div class="eyebrow" data-i18n="name.eyebrow">The name</div>
+      <h2 class="h2" id="name-h" data-i18n="name.title">고리 means a ring, a link.</h2>
+      <p class="pron">go-ree · /ko.ɾi/</p>
+      <p class="lede" data-i18n="name.body">A small piece that joins things into something larger. An agent can decide what to do; acting on it means reaching a real service. Each integration is one more link between intent and action.</p>
+      <blockquote lang="ko">AI 에이전트를 현실 세계와 잇는 고리.<span lang="en">A link between AI agents and the real world.</span></blockquote>
+    </div>
+  </div>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="how.eyebrow">How it works</div>
+      <h2 class="h2" id="how-h" data-i18n="how.title">From clone to first tool call in three steps.</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <h3 data-i18n="how.s1.t">Deploy</h3>
+        <p data-i18n="how.s1.d">Run the Node server with Docker Compose and PostgreSQL, or deploy the same core to Cloudflare Workers.</p>
+        <div class="snippet">docker compose up --build -d</div>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <h3 data-i18n="how.s2.t">Add provider credentials</h3>
+        <p data-i18n="how.s2.d">Use your NAVER API HUB application and Kakao REST API key. They stay on your infrastructure.</p>
+        <div class="snippet">NAVER_CLIENT_ID=…
+KAKAO_REST_API_KEY=…</div>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <h3 data-i18n="how.s3.t">Call tools from your agent</h3>
+        <p data-i18n="how.s3.d">Give your agent the catalog as tools and forward its calls to Gori. Inputs are validated against each tool's JSON Schema. MCP support is coming soon.</p>
+        <div class="snippet">GET  /v1/tools
+POST /v1/tools/{id}/execute</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="feat-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="feat.eyebrow">What's inside</div>
+      <h2 class="h2" id="feat-h" data-i18n="feat.title">What ships today, and what's next.</h2>
+      <p class="lede" data-i18n="feat.lede">Each part is labelled with its real status. Gori is early; we'd rather you know.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-top"><h3>Gori Core</h3><span class="status ok" data-i18n="st.ok">Available</span></div>
+        <p data-i18n="feat.core">Discover tools, validate inputs, authorize requests, and call provider APIs. Stable tool IDs and snake_case error codes.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-top"><h3 data-i18n="feat.infra.t">Runs on your infrastructure</h3><span class="status ok" data-i18n="st.ok">Available</span></div>
+        <p data-i18n="feat.infra">One shared core for Docker and Cloudflare Workers. SQLite, PostgreSQL, and D1 storage adapters.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-top"><h3>Gori Vault</h3><span class="status planned" data-i18n="st.plan">Planned</span></div>
+        <p data-i18n="feat.vault">Encrypted credentials and OAuth connections with refresh and revocation. Today, credentials come from environment variables.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-top"><h3>Gori Hub</h3><span class="status planned" data-i18n="st.plan">Planned</span></div>
+        <p data-i18n="feat.hub">Versioned connectors, tool schemas, setup guides, and compatibility notes in one place.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="providers" aria-labelledby="prov-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="prov.eyebrow">Providers</div>
+      <h2 class="h2" id="prov-h" data-i18n="prov.title">Start with the services Korea already uses.</h2>
+    </div>
+    <div class="providers">
+      <div class="provider">
+        <h3>Naver <small lang="ko">네이버</small></h3>
+        <div class="tool"><code>naver.search_news</code><span data-i18n="prov.naver">Search Korean news articles.</span></div>
+      </div>
+      <div class="provider">
+        <h3>Kakao <small lang="ko">카카오</small></h3>
+        <div class="tool"><code>kakao.search_places</code><span data-i18n="prov.kakao">Search places by keyword.</span></div>
+      </div>
+      <div class="provider more">
+        <h3 data-i18n="prov.more.t">More coming</h3>
+        <p data-i18n="prov.more">Connectors are added one tested tool at a time. Tell us which service you need next.</p>
+        <a href="{{repo}}/issues/new" data-i18n="prov.more.link">Open an issue</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" aria-labelledby="price-h">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow" data-i18n="price.eyebrow">Pricing</div>
+      <h2 class="h2" id="price-h" data-i18n="price.title">Free to self-host. A managed cloud is on the way.</h2>
+      <p class="lede" data-i18n="price.lede">The self-hosted edition is the full product, not a trial. Hosting and support are optional.</p>
+    </div>
+    {{pricing_cards}}
+    <a class="more-link" href="{{root}}pricing.html"><span data-i18n="price.more">Compare plans and pricing FAQ</span>{{icon.arrow}}</a>
+  </div>
+</section>
+
+<section id="deploy" class="deploy" aria-labelledby="deploy-h">
+  <div class="wrap">
+    <div class="head" style="margin-bottom:0">
+      <div class="eyebrow" data-i18n="deploy.eyebrow">Deploy</div>
+      <h2 class="h2" id="deploy-h" data-i18n="deploy.title">Pick your runtime. Same core on both.</h2>
+    </div>
+    <div class="deploy-grid">
+      <div class="cmd">
+        <div class="cmd-head"><span>Docker Compose</span>
+          <button class="icon-btn copy" type="button" data-copy-from="cmd-docker" aria-label="Copy Docker commands">{{icon.copy}}</button></div>
+<pre id="cmd-docker">git clone {{repo}}.git &amp;&amp; cd gori
+cp .env.example .env
+docker compose up --build -d
+curl localhost:3000/ready</pre>
+      </div>
+      <div class="cmd">
+        <div class="cmd-head"><span>Cloudflare Workers</span>
+          <button class="icon-btn copy" type="button" data-copy-from="cmd-cf" aria-label="Copy Cloudflare commands">{{icon.copy}}</button></div>
+<pre id="cmd-cf">npx wrangler secret put GORI_API_KEY
+npx wrangler secret put KAKAO_REST_API_KEY
+npx wrangler deploy</pre>
+      </div>
+    </div>
+    <div class="ctas">
+      <a class="btn btn-primary" href="{{root}}docs/operations.html"><span data-i18n="cta.guide">Read the deploy guide</span>{{icon.arrow}}</a>
+      <a class="btn btn-secondary" href="{{repo}}" data-i18n="cta.github">View on GitHub</a>
+    </div>
+  </div>
+</section>
