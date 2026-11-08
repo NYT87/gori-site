@@ -4,7 +4,7 @@ import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO, layout, pricingCards, renderDoc, rewriteDocLink, slugify } from '../src/render.js';
-import { build } from '../src/build.js';
+import { build, buildPreview } from '../src/build.js';
 
 test('rewriteDocLink maps public docs to html pages and keeps anchors', () => {
   assert.equal(rewriteDocLink('api.md', 'development.md'), 'api.html');
@@ -58,7 +58,7 @@ test('layout escapes metadata and points og:image at the published banner', () =
 test('build writes every public page and no private docs', async () => {
   const out = await mkdtemp(join(tmpdir(), 'gori-site-'));
   try {
-    const { pages } = await build(out);
+    const { pages } = await buildPreview(out);
     for (const p of ['index.html', 'pricing.html', 'agents.html', '404.html', 'docs/index.html', 'docs/agents.html', 'docs/api.html', 'docs/configuration.html', 'docs/operations.html', 'docs/development.html', 'docs/architecture.html']) {
       assert.ok(pages.includes(p), `missing ${p}`);
     }
@@ -86,6 +86,26 @@ test('build writes every public page and no private docs', async () => {
     const api = await readFile(join(out, 'docs/api.html'), 'utf8');
     assert.match(api, /<h1>HTTP API<\/h1>/);
     assert.match(api, /href="\.\.\/assets\/site\.css"/);
+  } finally {
+    await rm(out, { recursive: true, force: true });
+  }
+});
+
+test('public release gate hides private repository links on every route and includes the banner', async () => {
+  const out = await mkdtemp(join(tmpdir(), 'gori-launch-'));
+  try {
+    const { pages } = await build(out);
+    for (const page of pages) {
+      const html = await readFile(join(out, page), 'utf8');
+      assert.match(html, /Coming soon/);
+      assert.match(html, /private development/);
+      assert.doesNotMatch(html, /github\.com\/NYT87\/gori|git clone|Self-host Gori|>Available</i);
+      assert.match(html, /assets\/readme-banner\.png/);
+      assert.doesNotMatch(html, /\{\{/);
+    }
+    await stat(join(out, 'assets/readme-banner.png'));
+    const missing = await readFile(join(out, '404.html'), 'utf8');
+    assert.match(missing, /src="\/gori-site\/assets\/readme-banner.png"/);
   } finally {
     await rm(out, { recursive: true, force: true });
   }

@@ -22,7 +22,7 @@ function fill(template, root) {
     });
 }
 
-export async function build(outDir = join(repoRoot, '_site')) {
+export async function buildPreview(outDir = join(repoRoot, '_site')) {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(join(outDir, 'docs'), { recursive: true });
   await mkdir(join(outDir, 'assets'), { recursive: true });
@@ -91,6 +91,33 @@ export async function build(outDir = join(repoRoot, '_site')) {
   await writeFile(join(outDir, 'assets/favicon.svg'), FAVICON);
   await writeFile(join(outDir, '.nojekyll'), '');
   return { outDir, pages: written };
+}
+
+// Only release announcements are published while the platform is private.
+export async function build(outDir = join(repoRoot, '_site')) {
+  await rm(outDir, { recursive: true, force: true });
+  await mkdir(join(outDir, 'docs'), { recursive: true });
+  await mkdir(join(outDir, 'assets'), { recursive: true });
+  const template = await readFile(join(here, 'pages/coming-soon.html'), 'utf8');
+  const pages = ['index.html', 'agents.html', 'pricing.html', '404.html', 'docs/index.html',
+    ...PUBLIC_DOCS.map(d => `docs/${htmlName(d.file)}`)];
+  for (const path of pages) {
+    const root = path === '404.html' ? '/gori-site/' : path.startsWith('docs/') ? '../' : '';
+    const body = template.replaceAll('{{root}}', root);
+    const html = layout({
+      title: 'Coming soon', description: 'Gori is in private development. Korean services, connected to your agents. Public release coming soon.',
+      root, page: 'launch', body, path: path === 'index.html' ? '' : path,
+    }).replace(/<nav\b[^>]*>[\s\S]*?<\/nav>/g, '');
+    await writeFile(join(outDir, path), html);
+  }
+  await copyFile(join(here, 'site.css'), join(outDir, 'assets/site.css'));
+  await copyFile(join(here, 'client.js'), join(outDir, 'assets/client.js'));
+  for (const name of ['og-image.png', 'readme-banner.png']) {
+    await copyFile(join(repoRoot, 'docs/assets/banners', name), join(outDir, 'assets', name));
+  }
+  await writeFile(join(outDir, 'assets/favicon.svg'), FAVICON);
+  await writeFile(join(outDir, '.nojekyll'), '');
+  return { outDir, pages };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

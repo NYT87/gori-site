@@ -2,6 +2,19 @@
 // English lives in the HTML; Korean strings are keyed by data-i18n below.
 (() => {
   const KO = {
+    'launch.status': '출시 준비 중',
+    'launch.title': '한국의 서비스와<br>AI 에이전트를 연결합니다.',
+    'launch.body': 'Gori는 AI 에이전트가 네이버, 카카오 등 한국의 서비스를 활용할 수 있도록 만드는 도구 계층입니다.',
+    'launch.note': '현재 비공개 개발 중입니다. 코드, 문서, 직접 호스팅은 공개 출시와 함께 제공할 예정이며, 출시일은 아직 정해지지 않았습니다.',
+    'launch.contact': '문의하기',
+    'launch.direction': '우리가 준비하는 것',
+    'launch.tools': '한국 서비스 연동',
+    'launch.tools.body': '네이버와 카카오를 시작으로, 에이전트가 사용할 수 있는 도구를 준비합니다.',
+    'launch.agents': '에이전트를 위한 인터페이스',
+    'launch.agents.body': '명확한 스키마와 HTTP 및 MCP 인터페이스로 도구를 연결할 계획입니다.',
+    'launch.control': '직접 운영하는 인프라',
+    'launch.control.body': '자체 인프라에서 운영할 수 있는 플랫폼을 목표로 개발하고 있습니다.',
+
     'skip': '본문으로 건너뛰기',
     'nav.how': '작동 방식', 'nav.providers': '제공자', 'nav.pricing': '요금', 'nav.docs': '문서',
     'hero.eyebrow': '오픈 소스 · AGPL-3.0',

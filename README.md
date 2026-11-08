@@ -41,3 +41,7 @@ When changing hosting, update SITE_URL in src/render.js and the absolute 404 lin
 ## License
 
 AGPL-3.0-only; see LICENSE. Preserves the original Gori license.
+
+## Pre-release publishing
+
+The default build publishes a coming-soon showcase, including the original Gori README banner. All previous docs, pricing, and agent URLs show the announcement while the platform is private. No private repository links or setup instructions are published. The earlier templates and documentation remain in source for future release; buildPreview is only used by their tests.
