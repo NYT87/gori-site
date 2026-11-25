@@ -14,6 +14,8 @@
     "check": "node --check src/build.js && node --check src/render.js && node --check src/client.js"
   },
   "devDependencies": {
+    "@nyt87/tokens": "0.1.0",
+    "@nyt87/ui": "0.2.0",
     "marked": "15.0.12"
   }
 }

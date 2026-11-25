@@ -95,7 +95,7 @@ export function pricingCards(root) {
       ${li('plan.self.f4', 'No Gori account required')}
       ${li('plan.self.f5', 'Community support on GitHub')}
     </ul>
-    <a class="btn btn-primary" href="${root}index.html#deploy" data-i18n="cta.selfhost">Self-host Gori</a>
+    <a class="ds-btn ds-btn--primary ds-btn--lg" href="${root}index.html#deploy" data-i18n="cta.selfhost">Self-host Gori</a>
   </article>
   <article class="plan" aria-labelledby="plan-cloud">
     <div class="plan-top"><h3 id="plan-cloud">Gori Cloud</h3><span class="status planned" data-i18n="st.soon">Coming soon</span></div>
@@ -109,8 +109,8 @@ export function pricingCards(root) {
     <div class="notify">
       <p data-i18n="plan.cloud.notify">Watch the repository for release news, or email us to hear when Cloud opens.</p>
       <div class="notify-row">
-        <a class="btn btn-secondary" href="${REPO}" data-i18n="plan.cloud.watch">Watch on GitHub</a>
-        <a class="btn btn-ghost" href="mailto:${CONTACT}?subject=Gori%20Cloud%20waitlist" data-i18n="plan.cloud.email">Email us</a>
+        <a class="ds-btn ds-btn--secondary ds-btn--lg" href="${REPO}" data-i18n="plan.cloud.watch">Watch on GitHub</a>
+        <a class="ds-btn ds-btn--ghost ds-btn--lg" href="mailto:${CONTACT}?subject=Gori%20Cloud%20waitlist" data-i18n="plan.cloud.email">Email us</a>
       </div>
     </div>
   </article>
@@ -123,10 +123,7 @@ export function pricingCards(root) {
       ${li('plan.sup.f2', 'Custom Korean-service connectors')}
       ${li('plan.sup.f3', 'Support in English or Korean')}
     </ul>
-    <div class="contact">
-      <a id="contact-addr" href="mailto:${CONTACT}">${CONTACT}</a>
-      <button class="icon-btn copy" type="button" data-copy-from="contact-addr" aria-label="Copy email address">${ICON.copy}</button>
-    </div>
+    <a class="ds-btn ds-btn--secondary ds-btn--lg" href="mailto:${CONTACT}?subject=Gori%20support" data-i18n="plan.sup.email">Email us</a>
   </article>
 </div>`;
 }
@@ -138,10 +135,11 @@ export function layout({ title, description, root, page, body, path }) {
     ['index.html#how', 'nav.how', 'How it works', null],
     ['pricing.html', 'nav.pricing', 'Pricing', 'pricing'],
     ['docs/index.html', 'nav.docs', 'Docs', 'docs'],
-  ].map(([href, key, label, id]) => `<a href="${root}${href}" data-i18n="${key}"${page === id ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  ].map(([href, key, label, id]) => `<a class="ds-header__link" href="${root}${href}" data-i18n="${key}"${page === id ? ' aria-current="page"' : ''}>${label}</a>`).join('')
+    + `<a class="ds-header__link" href="${REPO}">GitHub</a>`;
   const fullTitle = page === 'home' ? 'Gori — Korean services, connected to your agents' : `${title} · Gori`;
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-accent="gori">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -157,43 +155,50 @@ export function layout({ title, description, root, page, body, path }) {
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml">
-<script>try{var t=localStorage.getItem('gori-theme');if(t)document.documentElement.dataset.theme=t;var l=localStorage.getItem('gori-lang');if(l==='ko')document.documentElement.lang='ko'}catch(e){}</script>
+<script>try{var t=localStorage.getItem('gori-theme'),d=document.documentElement;if(t)d.dataset.theme=t;else if(!matchMedia('(prefers-color-scheme: light)').matches&&!matchMedia('(prefers-color-scheme: dark)').matches)d.dataset.theme='dark';var l=localStorage.getItem('gori-lang');if(l==='ko')document.documentElement.lang='ko'}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="${root}assets/tokens.css">
+<link rel="stylesheet" href="${root}assets/ds.css">
+<link rel="stylesheet" href="${root}assets/gori-theme.css">
 <link rel="stylesheet" href="${root}assets/site.css">
 </head>
 <body class="page-${page}">
-<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
-<header class="nav">
-  <div class="wrap">
-    <a class="wordmark" href="${root}index.html" aria-label="Gori home">Gori <span class="ko" lang="ko">고리</span></a>
-    <nav class="nav-links" aria-label="Primary">${nav}<a href="${REPO}">GitHub</a></nav>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" data-lang="en" aria-pressed="true">EN</button>
-      <button type="button" data-lang="ko" aria-pressed="false" lang="ko">한국어</button>
+<a class="ds-skip" href="#main" data-i18n="skip">Skip to content</a>
+<header class="ds-header ds-header--sticky">
+  <div class="ds-container ds-header__bar">
+    <a class="ds-brand" href="${root}index.html" aria-label="Gori home"><span class="ds-brand__name">Gori <span class="ko" lang="ko">고리</span></span></a>
+    <nav class="ds-header__nav" aria-label="Primary">${nav}</nav>
+    <div class="ds-header__actions">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="ko" aria-pressed="false" lang="ko">한국어</button>
+      </div>
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme">${ICON.sun}</button>
+      <button class="ds-header__menu" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open navigation menu" data-label-open="Open navigation menu" data-label-close="Close navigation menu"><span class="ds-header__burger" aria-hidden="true"></span></button>
     </div>
-    <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme">${ICON.sun}</button>
   </div>
-  <nav class="nav-mobile" aria-label="Primary mobile"><div class="wrap">${nav}<a href="${REPO}">GitHub</a></div></nav>
+  <nav id="nav-panel" class="ds-header__panel" aria-label="Primary (menu)" hidden><div class="ds-container">${nav}</div></nav>
 </header>
 <main id="main">
 <div class="release-notice wrap" role="note" data-i18n="release.notice">Coming soon — Gori is in private development. Explore the preview below; the repository and public release are not available yet.</div>
 ${body}
 </main>
-<footer>
-  <div class="wrap">
-    <div class="foot-brand"><span class="wordmark">Gori <span class="ko" lang="ko">고리</span></span>
-      <span>© 2026 <a href="${COMPANY_URL}">NYT87</a> · <a href="mailto:${CONTACT}">${CONTACT}</a></span></div>
-    <nav aria-label="Footer">
-      <a href="${root}docs/index.html" data-i18n="nav.docs">Docs</a>
-      <a href="${root}pricing.html" data-i18n="nav.pricing">Pricing</a>
-      <a href="${REPO}">GitHub</a>
-      <a href="${REPO}/blob/main/LICENSE">AGPL-3.0-only</a>
+<footer class="ds-footer">
+  <div class="ds-container ds-footer__top">
+    <a class="ds-brand" href="${root}index.html" aria-label="Gori home"><span class="ds-brand__name">Gori <span class="ko" lang="ko">고리</span></span></a>
+    <p class="ds-footer__credit">© 2026 <a class="ds-footer__link ds-footer__link--inline" href="${COMPANY_URL}">NYT87</a></p>
+    <nav class="ds-footer__row" aria-label="Footer">
+      <a class="ds-footer__link" href="${root}docs/index.html" data-i18n="nav.docs">Docs</a>
+      <a class="ds-footer__link" href="${root}pricing.html" data-i18n="nav.pricing">Pricing</a>
+      <a class="ds-footer__link" href="${REPO}">GitHub</a>
+      <a class="ds-footer__link" href="${REPO}/blob/main/LICENSE">AGPL-3.0-only</a>
     </nav>
   </div>
 </footer>
 <div class="sr-only" id="announce" role="status" aria-live="polite"></div>
+<script type="module" src="${root}assets/menu.js"></script>
 <script src="${root}assets/client.js" defer></script>
 </body>
 </html>

@@ -3,6 +3,8 @@
 import { mkdir, readFile, writeFile, copyFile, rm } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { defineTheme } from '@nyt87/tokens/theme';
+import { GORI_THEME } from './theme.js';
 import { ICON, PUBLIC_DOCS, REPO, docPage, escapeHtml, htmlName, layout, pricingCards } from './render.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -89,11 +91,19 @@ export async function build(outDir = join(repoRoot, '_site')) {
   <div class="eyebrow">404</div>
   <h1>This page isn't here.</h1>
   <p class="lede">The link may be old, or the page moved. Try the homepage or the docs.</p>
-  <div class="ctas"><a class="btn btn-primary" href="/gori-site/">Gori home</a><a class="btn btn-secondary" href="/gori-site/docs/">Docs</a></div>
+  <div class="ctas"><a class="ds-btn ds-btn--primary ds-btn--lg" href="/gori-site/">Gori home</a><a class="ds-btn ds-btn--secondary ds-btn--lg" href="/gori-site/docs/">Docs</a></div>
 </div></section>`;
   await write('404.html', layout({ title: 'Not found', description: 'Page not found.', root: '/gori-site/', page: '404', body: notFound, path: '404.html' }));
 
   // Assets
+  // Design system: shared tokens, component styles and the menu behaviour (0.45 KB), plus the Gori theme.
+  const resolveAsset = spec => fileURLToPath(import.meta.resolve(spec));
+  await copyFile(resolveAsset('@nyt87/tokens/tokens.css'), join(outDir, 'assets/tokens.css'));
+  await copyFile(resolveAsset('@nyt87/ui/styles.css'), join(outDir, 'assets/ds.css'));
+  await copyFile(resolveAsset('@nyt87/ui/menu'), join(outDir, 'assets/menu.js'));
+  const { css, failures } = defineTheme(GORI_THEME);
+  if (failures.length) throw new Error(`The Gori theme fails WCAG contrast:\n${failures.map(f => `  ${f.mode}: ${f.fg} on ${f.bg} is ${f.ratio}:1, needs ${f.min}:1`).join('\n')}`);
+  await writeFile(join(outDir, 'assets/gori-theme.css'), `/* Generated from src/theme.js by build.js. */\n${css}\n`);
   await copyFile(join(here, 'site.css'), join(outDir, 'assets/site.css'));
   await copyFile(join(here, 'client.js'), join(outDir, 'assets/client.js'));
   await copyFile(join(repoRoot, 'docs/assets/banners/og-image.png'), join(outDir, 'assets/og-image.png'));

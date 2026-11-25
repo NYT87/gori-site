@@ -50,7 +50,7 @@
     'plan.cloud.f1': '관리형 호스팅과 업그레이드', 'plan.cloud.f2': '영어·한국어 대시보드', 'plan.cloud.f3': '사용량 보고와 할당량',
     'plan.cloud.notify': '저장소를 Watch하면 출시 소식을 받을 수 있습니다. Cloud 출시 알림을 원하시면 이메일을 보내 주세요.',
     'plan.cloud.watch': 'GitHub에서 Watch', 'plan.cloud.email': '이메일 보내기',
-    'plan.sup.t': '지원', 'plan.sup.price': '맞춤형', 'plan.sup.unit': '팀 대상',
+    'plan.sup.email': '이메일 보내기', 'plan.sup.t': '지원', 'plan.sup.price': '맞춤형', 'plan.sup.unit': '팀 대상',
     'plan.sup.d': '프로덕션 운영 지원이나 비즈니스에 필요한 커넥터를 도와드립니다.',
     'plan.sup.f1': '배포와 업그레이드 지원', 'plan.sup.f2': '맞춤형 한국 서비스 커넥터', 'plan.sup.f3': '영어 또는 한국어 지원',
     'price.note': '제공자(네이버, 카카오) 사용료는 내 애플리케이션 기준으로 각 제공자가 청구하며 Gori 요금에 포함되지 않습니다.',
