@@ -20,7 +20,6 @@ No build step, bundler, formatter, or linter is configured. Use ES modules, two-
 | `packages/storage` | `@gori/storage` | Store contract, migrations, SQLite, PostgreSQL, and D1 adapters. |
 | `apps/server` | `@gori/server` | Node HTTP adapter used by Docker. Opens storage, adds `/ready`, handles signals. |
 | `apps/worker` | `@gori/worker` | Cloudflare Worker entry point. |
-| `apps/site` | `@gori/site` | Public website (homepage, pricing, docs) built to static HTML for GitHub Pages. |
 | `docs/` | | Architecture, API, configuration, operations, this guide. |
 
 Shared packages never import application code. Applications import packages only through their `exports` map.
@@ -31,7 +30,6 @@ Shared packages never import application code. Applications import packages only
 | --- | --- | --- |
 | `packages/core/test` | Routing, auth, validation, provider calls with a fake `fetch`, error redaction | Nothing |
 | `apps/worker/test` | Worker adapter resolves the core and passes bindings | Nothing |
-| `apps/site/test` | Doc link rewriting, private docs excluded, full site build into a temp directory | Nothing |
 | `packages/storage/test/storage.test.js` | Real SQLite persistence, D1 contract double, migration loader, `openStore` selection | Nothing |
 | `packages/storage/test/postgres.test.js` | Placeholder translation, migration transaction and rollback with a mock pool | Nothing |
 | `packages/storage/test/postgres.integration.test.js` | Live migrations and persistence | `GORI_TEST_POSTGRES_URL` |
@@ -60,17 +58,10 @@ An adapter supplies `run(sql, values)` and `first(sql, values)`, both async, tak
 
 ## Dependency policy
 
-Everything is pinned through the root `package-lock.json`. Database drivers are optional peer dependencies of `@gori/storage` and hard dependencies of the app that needs them, so Workers builds never pull Node drivers. Do not install packages outside the lockfile, in the Dockerfile or otherwise. `marked` is a dev dependency of `@gori/site` only; it never reaches the server or Worker.
+Everything is pinned through the root `package-lock.json`. Database drivers are optional peer dependencies of `@gori/storage` and hard dependencies of the app that needs them, so Workers builds never pull Node drivers. Do not install packages outside the lockfile, in the Dockerfile or otherwise.
 
 ## Public website
 
-`apps/site` renders the homepage, the pricing page, and the user-facing docs into `_site/` (ignored by git). It is deployed to https://nyt87.github.io/gori/ by `.github/workflows/pages.yml` on every push to `main` that touches `apps/site/`, `docs/`, or the lockfile.
+The public website lives in its own repository, [NYT87/gori-site](https://github.com/NYT87/gori-site), published at https://nyt87.github.io/gori-site/. It is not built from this repository, which is private for now. `docs/` here is the source of truth for the user-facing documentation (agents, API, configuration, operations, development, architecture); gori-site keeps a copy.
 
-```sh
-npm run build --workspace=@gori/site        # writes _site/
-open _site/index.html                       # links are relative, so it works from disk
-```
-
-Published docs are the files listed in `PUBLIC_DOCS` in `apps/site/src/render.js`: api, configuration, operations, development, and architecture. Everything else in `docs/` (design specs, brand guidelines) stays out of the site; links to it point at GitHub. Links between public docs are rewritten from `.md` to `.html`. To publish a new doc, add it to `PUBLIC_DOCS` with a one-line summary.
-
-English copy lives in `apps/site/src/pages/*.html` and the shared pricing cards in `render.js`; Korean strings live in `apps/site/src/client.js`, keyed by `data-i18n`. Change both when you change copy. Pricing must match what exists: no prices until they are decided. Docs pages are English-only for now. One-time setup on GitHub: Settings → Pages → Source: GitHub Actions.
+When platform behaviour, endpoints, or configuration change, update `docs/` and `README.md` here in the same change, then copy the changed public markdown into gori-site's `docs/`, run its tests, and push. Pricing on the site must match what exists: no prices until they are decided, and nothing offered that is not built. English and Korean copy change together.
