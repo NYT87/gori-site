@@ -69,7 +69,7 @@ Methods: `initialize`, `ping`, `tools/list` (every catalog tool in one page) and
 
 ## Limits
 
-- Request bodies above 4096 bytes are rejected (16 384 for `/mcp`). The Node server closes with an empty 413 while reading; the shared handler counts streamed bytes and cancels reading as soon as the limit is exceeded, returning 413 `payload_too_large`.
+- Request bodies above 4096 bytes are rejected (16 384 for `/mcp`). On the HTTP routes the Node server closes with an empty 413 while reading (on `/mcp` it answers a JSON-RPC `-32600` body); the shared handler counts streamed bytes and cancels reading as soon as the limit is exceeded, returning 413 `payload_too_large`.
 - Provider calls time out after 10 seconds and do not follow redirects.
 - No rate limiting or quotas are enforced yet. Provider 429 responses are passed through as 429.
 
