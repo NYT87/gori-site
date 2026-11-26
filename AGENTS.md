@@ -16,7 +16,7 @@ Gori is private for now. Keep the "Coming soon" notice, and never link visitors 
 
 ## Design system
 
-The site is built on `@nyt87/tokens` and `@nyt87/ui` (header, footer, buttons, the 0.45 KB menu script). Use their classes instead of custom ones, and take colors from the tokens. Gori's own palette is `src/theme.js`: the build turns it into `assets/gori-theme.css` and fails if any text pair drops below WCAG contrast. The accent comes from the design system, so primary buttons match nyt87.github.io; green is only for success states. The header stays one fixed 64px row that never wraps.
+The site is built on `@nyt87/tokens` and `@nyt87/ui` (header, footer, buttons, the 0.45 KB menu script). Use their classes instead of custom ones, and take colors from the tokens. Gori's own palette is the shared preset `@nyt87/tokens/themes/gori.css` (change it in the design-system repo, not here): the build copies it to `assets/gori-theme.css`, and its build fails if any text pair drops below WCAG contrast. The accent comes from the design system, so primary buttons match nyt87.github.io; green is only for success states. The header stays one fixed 64px row that never wraps.
 
 ## Build, test, and deploy
 

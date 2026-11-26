@@ -26,7 +26,7 @@ The workflow can also be started manually.
 
 ## Design system
 
-The site is built on the nyt87 design system: `@nyt87/tokens` (colour, type, spacing) and `@nyt87/ui` (header, footer, buttons and the 0.45 KB menu script). Gori's slate neutrals and dark-first default are in `src/theme.js`; the build turns them into `assets/gori-theme.css` and fails if any text pair drops below WCAG contrast. The accent (buttons, links, focus ring) is the design system's own, so buttons match nyt87.github.io.
+The site is built on the nyt87 design system: `@nyt87/tokens` (colour, type, spacing) and `@nyt87/ui` (header, footer, buttons and the 0.45 KB menu script). Gori's slate neutrals and dark-first default are the shared Gori theme preset in `@nyt87/tokens` (`themes/gori.css`); the build copies it to `assets/gori-theme.css`, and the design system's own build fails if any text pair drops below WCAG contrast. The site keeps no copy of the values. The accent (buttons, links, focus ring) is the design system's own, so buttons match nyt87.github.io.
 
 The packages come from GitHub Packages, which needs a token even for public packages: run `gh auth refresh -s read:packages` once, then `export NODE_AUTH_TOKEN=$(gh auth token)` before `npm ci`. The `.npmrc` maps the scope, and the Pages workflow passes `secrets.GITHUB_TOKEN`.
 

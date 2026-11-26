@@ -1,10 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineTheme } from '@nyt87/tokens/theme';
-import { GORI_THEME } from '../src/theme.js';
+import { gori } from '@nyt87/tokens/themes';
 import { REPO, layout, pricingCards, renderDoc, rewriteDocLink, slugify } from '../src/render.js';
 import { build } from '../src/build.js';
 
@@ -90,6 +92,7 @@ test('build writes every public page and no private docs', async () => {
     assert.match(api, /href="\.\.\/assets\/site\.css"/);
     assert.match(api, /href="\.\.\/assets\/tokens\.css"/);
     const theme = await readFile(join(out, 'assets/gori-theme.css'), 'utf8');
+    assert.equal(theme, await readFile(fileURLToPath(import.meta.resolve('@nyt87/tokens/themes/gori.css')), 'utf8'), 'the site ships the shared Gori theme file as is');
     assert.match(theme, /:root\[data-accent='gori'\]/);
     assert.match(theme, /--bg: #020617/);
     assert.doesNotMatch(theme, /--accent:|--on-accent:|--link:/, 'the accent family comes from the design system');
@@ -118,7 +121,11 @@ test('full preview keeps content while removing private repository links', async
 });
 
 test('the Gori theme meets WCAG contrast in light and dark', () => {
-  assert.deepEqual(defineTheme(GORI_THEME).failures, []);
+  assert.deepEqual(defineTheme(gori).failures, []);
+});
+
+test('the theme has one source: the site keeps no copy of its values', () => {
+  assert.equal(existsSync(new URL('../src/theme.js', import.meta.url)), false);
 });
 
 test('layout uses the shared header and footer with a working menu and no leftover custom nav', () => {
