@@ -118,7 +118,7 @@ Authenticate with `Authorization: Bearer <GORI_ADMIN_KEY>`. This key is separate
 | `GET /v1/admin/workspaces?limit&cursor` |  | `{ items: [{ id, name, created_at }], next_cursor }` |
 | `POST /v1/admin/workspaces` | `{ "name" }` | 201, the workspace |
 | `GET /v1/admin/workspaces/{id}` |  | the workspace with its `quota`: `{ limit, source, period, used, remaining, resets_at }` (`limit` is null without a limit; `source` is `workspace`, `default` or null) |
-| `PUT /v1/admin/workspaces/{id}/quota` | `{ "monthly_call_limit": 100 }` | the new `quota`. An integer ≥ 0 sets the workspace limit; `null` follows the operator default. Audited as `quota.set`. |
+| `PUT /v1/admin/workspaces/{id}/quota` | `{ "monthly_call_limit": 100 }` | the new `quota`. An integer from 0 to 2 147 483 647 sets the workspace limit; `null` follows the operator default. Audited as `quota.set`. |
 | `GET /v1/admin/workspaces/{id}/keys` |  | `[{ id, name, created_at, revoked_at }]` |
 | `POST /v1/admin/workspaces/{id}/keys` | `{ "name" }` | 201, `{ id, name, created_at, token }`. The token appears only here. |
 | `DELETE /v1/admin/workspaces/{id}/keys/{keyId}` |  | `{ id, revoked_at }`; repeating it succeeds |
