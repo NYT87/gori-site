@@ -34,7 +34,7 @@ The stack publishes only `127.0.0.1:${PORT:-3000}`; PostgreSQL has no published 
 
 ## Workspace credentials
 
-Each workspace's Naver and Kakao credentials are encrypted at rest with the key ring in `GORI_ENCRYPTION_KEYS`, which is required whenever `GORI_STORAGE` is set. Manage them with `npm run admin -- <command>` (or `docker compose exec gori node apps/server/src/admin.js <command>`): `workspace create|list`, `key create|list|revoke`, `credential set|list|delete|rotate`, `encryption-key generate`. API key tokens and secrets are shown or read once and never logged.
+Each workspace's Naver and Kakao credentials are encrypted at rest with the key ring in `GORI_ENCRYPTION_KEYS`, which is required whenever `GORI_STORAGE` is set. Manage them with `npm run admin -- <command>` (or `docker compose exec gori node apps/server/src/admin.js <command>`): `workspace create|list|quota`, `key create|list|revoke`, `credential set|list|delete|rotate`, `encryption-key generate`. API key tokens and secrets are shown or read once and never logged.
 
 Rotating the encryption key:
 
@@ -46,7 +46,7 @@ Losing every key that encrypted a row makes those credentials unrecoverable: re-
 
 ## Usage and audit
 
-Every authenticated `POST /v1/tools/<id>/execute` request that reaches the handler is recorded once, including ones rejected for `payload_too_large`, `invalid_json`, `unknown_tool` or `invalid_input` (a tool name outside the catalog is recorded as `unknown`): principal (operator or workspace), workspace and key ids, tool id, outcome, error code, HTTP status, provider attempts, duration and start time. Every admin action (workspace create, API key create/revoke, credential set/delete/rotate) is recorded as an audit event with the actor, a target id and non-secret details.
+Every authenticated `POST /v1/tools/<id>/execute` request that reaches the handler is recorded once, including ones rejected for `payload_too_large`, `invalid_json`, `unknown_tool` or `invalid_input` (a tool name outside the catalog is recorded as `unknown`): principal (operator or workspace), workspace and key ids, tool id, outcome, error code, HTTP status, provider attempts, duration and start time. Every admin action (workspace create, API key create/revoke, credential set/delete/rotate, quota set) is recorded as an audit event with the actor, a target id and non-secret details.
 
 Never recorded: requests that fail on a storage error before the handler finishes (they return 500), search text, request bodies, provider responses, tokens, secrets, IP addresses, authentication failures, and catalog reads. A recording failure is logged as `usage_record_failed tool=<id>` and never changes the response. Without storage (and on the Worker) nothing is recorded.
 
@@ -57,6 +57,10 @@ Query with `npm run admin -- usage|executions|audit` (add `--json` for scripting
 `GORI_ADMIN_KEY` turns on `/v1/admin/*` (see the [API](api.md#admin-api)). Treat it like a root credential: it can create keys and replace provider credentials. It is separate from `GORI_API_KEY` so a leaked agent key cannot manage the platform. Rotating it means setting a new value (at least 32 characters) and restarting; there is no overlap period, so update the dashboard and scripts together. Unset it to switch the admin API off.
 
 The admin API has no rate limiting and no CORS. Put HTTPS and, for internet-facing deployments, request limiting or an IP allow-list in front of it, and serve any browser dashboard from the same origin. Admin actions are audited with the actor `admin-key`.
+
+## Free tier and quotas
+
+To cap what a workspace can do for free, set `GORI_DEFAULT_MONTHLY_CALLS` (for example `1000`): every workspace then gets that many successful tool calls per UTC month, and further calls get `quota_exceeded` (429) until the month rolls over. When a workspace starts paying, raise its own limit in the dashboard (workspace page, "Set limit"), with `admin workspace quota <workspaceId> --set <n>`, or through `PUT /v1/admin/workspaces/{id}/quota`; `--clear` returns it to the default. Each change is audited (`quota.set`). Usage is counted only while a limit applies. Gori does no billing: you decide the numbers and when to raise them.
 
 ## Dashboard
 

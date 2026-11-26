@@ -67,11 +67,20 @@ Methods: `initialize`, `ping`, `tools/list` (every catalog tool in one page) and
 
 **Usage.** Each `tools/call` is recorded like an HTTP execution, with the channel `mcp` instead of `http` (the `channel` field of [`GET /v1/admin/executions`](#admin-api)). `initialize`, `ping`, `tools/list`, notifications and rejected requests record nothing.
 
+## Monthly quota
+
+On Node deployments with storage, a workspace can have a monthly allowance of successful tool calls, counted per UTC calendar month and shared by the HTTP API and MCP. The limit is the workspace's own value, else the operator default `GORI_DEFAULT_MONTHLY_CALLS`, else none. The operator key and the admin API are never limited, and the Worker has no quota.
+
+- One call counts when it succeeds (status 200). Failed calls (invalid input, missing credentials, provider errors) do not use up allowance.
+- Over the limit, the call is refused before any provider is contacted: `429 { "error": "quota_exceeded" }` with `Retry-After` (seconds until the next UTC month). This is Gori's own limit; a provider's 429 is `provider_error`. Over MCP it is a tool error: `quota_exceeded: this workspace has used its monthly allowance of <n> calls; it resets on <date>.`
+- Responses for a limited workspace key carry `X-Gori-Quota-Limit`, `X-Gori-Quota-Remaining` and `X-Gori-Quota-Reset` (ISO 8601 UTC). They are absent when no limit applies.
+- A limit of `0` refuses every call. Calls made before a limit was set are not counted. Refused calls are recorded like any execution, with the error code `quota_exceeded`.
+
 ## Limits
 
 - Request bodies above 4096 bytes are rejected (16 384 for `/mcp`). On the HTTP routes the Node server closes with an empty 413 while reading (on `/mcp` it answers a JSON-RPC `-32600` body); the shared handler counts streamed bytes and cancels reading as soon as the limit is exceeded, returning 413 `payload_too_large`.
 - Provider calls time out after 10 seconds and do not follow redirects.
-- No rate limiting or quotas are enforced yet. Provider 429 responses are passed through as 429.
+- The only Gori-side limit is the optional [monthly quota](#monthly-quota); there is no burst rate limit. Provider 429 responses are passed through as `provider_error` with status 429.
 
 ## Error codes
 
@@ -83,6 +92,7 @@ Methods: `initialize`, `ping`, `tools/list` (every catalog tool in one page) and
 | 404 | `not_found` | Unknown route. |
 | 404 | `unknown_tool` | Tool ID not in the catalog. |
 | 413 | `payload_too_large` | Body over 4096 bytes. |
+| 429 | `quota_exceeded` | The workspace has used its monthly call allowance (Gori's own limit, not the provider's). |
 | 429 | `provider_error` | Provider returned 429. |
 | 500 | `internal_error` | Unhandled failure in the Node adapter. |
 | 403 | `provider_not_connected` | Workspace key whose workspace has no credentials for the tool's provider. |
@@ -107,7 +117,8 @@ Authenticate with `Authorization: Bearer <GORI_ADMIN_KEY>`. This key is separate
 | `GET /v1/admin/providers` |  | `[{ id, fields }]`: providers and the secret fields each needs |
 | `GET /v1/admin/workspaces?limit&cursor` |  | `{ items: [{ id, name, created_at }], next_cursor }` |
 | `POST /v1/admin/workspaces` | `{ "name" }` | 201, the workspace |
-| `GET /v1/admin/workspaces/{id}` |  | the workspace |
+| `GET /v1/admin/workspaces/{id}` |  | the workspace with its `quota`: `{ limit, source, period, used, remaining, resets_at }` (`limit` is null without a limit; `source` is `workspace`, `default` or null) |
+| `PUT /v1/admin/workspaces/{id}/quota` | `{ "monthly_call_limit": 100 }` | the new `quota`. An integer ≥ 0 sets the workspace limit; `null` follows the operator default. Audited as `quota.set`. |
 | `GET /v1/admin/workspaces/{id}/keys` |  | `[{ id, name, created_at, revoked_at }]` |
 | `POST /v1/admin/workspaces/{id}/keys` | `{ "name" }` | 201, `{ id, name, created_at, token }`. The token appears only here. |
 | `DELETE /v1/admin/workspaces/{id}/keys/{keyId}` |  | `{ id, revoked_at }`; repeating it succeeds |
