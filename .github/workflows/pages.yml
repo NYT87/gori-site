@@ -26,10 +26,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      # @nyt87/* (design system) come from GitHub Packages (see .npmrc); reading them needs a token, even for public packages.
       - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm test
       - run: npm run check
       - run: npm run build

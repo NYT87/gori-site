@@ -20,6 +20,6 @@ The site is built on `@nyt87/tokens` and `@nyt87/ui` (header, footer, buttons, t
 
 ## Build, test, and deploy
 
-Node 24 or later. The design-system packages come from GitHub Packages, which needs a token even for public packages: `export NODE_AUTH_TOKEN=$(gh auth token)` (scope `read:packages`), then `npm ci`. Run `npm test`, `npm run check`, and `npm run build` before claiming work is done, and report any check you could not run. Preview with `python3 -m http.server 8080 --directory _site`.
+Node 24 or later. The design-system packages (`@nyt87/*`) are public on npmjs.org, so `npm ci` needs no token. Run `npm test`, `npm run check`, and `npm run build` before claiming work is done, and report any check you could not run. Preview with `python3 -m http.server 8080 --directory _site`.
 
 Pushing to `main` builds, tests, and deploys through GitHub Actions, so commit and push only when asked. Concise imperative commit subjects. Never commit credentials.
