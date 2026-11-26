@@ -78,6 +78,19 @@ Notes:
 - **Validation.** Gori validates every input against the tool's schema and answers `400 invalid_input` when it does not match. Returning that error to the model lets it fix its call.
 - **Other models.** The pattern is the same for any model with tool use: map `inputSchema` to the model's parameter schema field and forward the arguments to the execute route.
 
+## Errors an agent can act on
+
+Gori errors are stable codes; return them to the model as the tool result so it can correct itself:
+
+| Code | What the agent can do |
+| --- | --- |
+| `invalid_input` | Fix the arguments to match the tool's schema. |
+| `provider_not_connected`, `provider_not_configured` | Ask a human to add the provider's credentials. |
+| `connection_required` | Name a connection from the returned labels (`list_connections` over MCP, `GET /v1/connections` over HTTP), or ask a human to connect an account. |
+| `connection_not_found`, `connection_scope_missing`, `connection_expired` | Pick a different connection, or ask a human to reconnect the account in the dashboard. |
+| `quota_exceeded` (429) | The workspace used its monthly allowance; wait for the reset date or ask a human to raise the limit. Do not retry in a loop. |
+| `provider_error` (429 or 502), `provider_unavailable` | The provider failed or rate-limited; retry later with backoff. |
+
 ## Plain API
 
 Agents are the main audience, but nothing in Gori requires one. Any HTTP client can list tools and execute them:
@@ -94,7 +107,8 @@ See the [HTTP API](api.md) for every route, limit, and error code.
 
 Gori serves the Model Context Protocol at `https://<your-gori>/mcp` on both the Docker and Cloudflare Workers deployments (the Worker accepts the operator key only). It uses the Streamable HTTP transport, stateless, with the same `Authorization: Bearer <key>` as the HTTP API: an operator key or a workspace key. See [HTTP API: MCP](api.md#mcp) for the protocol details.
 
-- Lists every catalog tool with underscore names (`naver_search_news`, `kakao_search_places`), an English summary, and the original input schema.
+- Lists every catalog tool with underscore names (`naver_search_news`, `kakao_search_places`, `gmail_search_messages`, `gmail_get_message`), an English summary, and the original input schema, plus `list_connections`, which returns the accounts connected to the workspace.
+- Tools that act on a connected account (Gmail) take an optional `connection` argument naming one of those accounts; with several connected and none named, the error lists the labels so the model can pick one. See [OAuth connections](api.md#oauth-connections).
 - Returns provider data as structured content, and Gori error codes as tool errors the model can read and act on (for example `provider_not_connected: this workspace has no naver credentials. Ask the Gori operator to add them.`).
 - Records MCP calls in usage history next to HTTP executions, marked with the channel `mcp`.
 

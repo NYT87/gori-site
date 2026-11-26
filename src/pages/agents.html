@@ -109,6 +109,8 @@ const message = await client.beta.messages.toolRunner({
           <tr><th scope="row"><code>unknown_tool</code></th><td data-i18n="agents.err.e2">The tool ID isn't in the catalog. Re-read the tool list.</td></tr>
           <tr><th scope="row"><code>provider_not_configured</code></th><td data-i18n="agents.err.e3">The operator hasn't added credentials for this provider. Tell the user; retrying won't help.</td></tr>
           <tr><th scope="row"><code>provider_not_connected</code></th><td data-i18n="agents.err.e6">This workspace has no credentials for the provider. Tell the user to connect it; retrying won't help.</td></tr>
+          <tr><th scope="row"><code>connection_required</code> (409)</th><td data-i18n="agents.err.e8">The tool needs a connected account and none was named. Pick one of the returned labels, or tell the user to connect one.</td></tr>
+          <tr><th scope="row"><code>connection_not_found</code>, <code>connection_scope_missing</code>, <code>connection_expired</code></th><td data-i18n="agents.err.e9">The named account is unknown, lacks the needed permission, or its access was revoked. Use another account, or tell the user to reconnect it.</td></tr>
           <tr><th scope="row"><code>quota_exceeded</code> (429)</th><td data-i18n="agents.err.e7">This workspace used its monthly allowance. Tell the user; retrying won't help until the allowance resets.</td></tr>
           <tr><th scope="row"><code>provider_error</code> (429)</th><td data-i18n="agents.err.e4">The provider's rate limit was reached. Wait, then retry.</td></tr>
           <tr><th scope="row"><code>provider_unavailable</code></th><td data-i18n="agents.err.e5">The provider didn't respond in time. Retry later.</td></tr>

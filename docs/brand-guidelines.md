@@ -90,7 +90,7 @@ Korean services are missing or an afterthought. **It runs** on infrastructure yo
 | Docs | Instructional, imperative | "Set `KAKAO_REST_API_KEY` and restart the server." | "`KAKAO_REST_API_KEY`를 설정하고 서버를 다시 시작하세요." |
 | Errors | Calm, actionable, stable code | "Naver credentials are missing (`provider_not_configured`). Add them in Provider credentials." | "네이버 인증 정보가 없습니다 (`provider_not_configured`). 제공자 인증 정보에서 추가하세요." |
 | Success | Brief | "Key created. Copy it now. It won't be shown again." | "키가 생성되었습니다. 지금 복사하세요. 다시 표시되지 않습니다." |
-| Status / roadmap | Factual | "Planned: OAuth connections." | "예정: OAuth 연결." |
+| Status / roadmap | Factual | "Planned: more OAuth providers." | "예정: OAuth 제공자 추가." |
 
 ### Writing rules
 

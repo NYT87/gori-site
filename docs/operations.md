@@ -34,12 +34,12 @@ The stack publishes only `127.0.0.1:${PORT:-3000}`; PostgreSQL has no published 
 
 ## Workspace credentials
 
-Each workspace's Naver and Kakao credentials are encrypted at rest with the key ring in `GORI_ENCRYPTION_KEYS`, which is required whenever `GORI_STORAGE` is set. Manage them with `npm run admin -- <command>` (or `docker compose exec gori node apps/server/src/admin.js <command>`): `workspace create|list|quota`, `key create|list|revoke`, `credential set|list|delete|rotate`, `encryption-key generate`. API key tokens and secrets are shown or read once and never logged.
+Each workspace's Naver and Kakao credentials are encrypted at rest with the key ring in `GORI_ENCRYPTION_KEYS`, which is required whenever `GORI_STORAGE` is set. Manage them with `npm run admin -- <command>` (or `docker compose exec gori node apps/server/src/admin.js <command>`): `workspace create|list|quota`, `key create|list|revoke`, `credential set|list|delete|rotate`, `oauth provider list|set|delete`, `connection list`, `encryption-key generate`. API key tokens and secrets are shown or read once and never logged.
 
 Rotating the encryption key:
 
 1. `npm run admin -- encryption-key generate k2` and put the new entry **first** in `GORI_ENCRYPTION_KEYS`, keeping the old one.
-2. Restart the server, then run `credential rotate`. It prints `rotated <n>` and exits 1, listing workspace and provider, for any row that cannot be decrypted.
+2. Restart the server, then run `credential rotate`. It re-encrypts workspace credentials, OAuth provider apps and OAuth connections, prints `rotated <n>`, and exits 1, naming the kind (and workspace and provider where there is one), for any row that cannot be decrypted.
 3. Run `credential list <workspaceId>` for each workspace; when every `key` shows the new id, remove the old entry.
 
 Losing every key that encrypted a row makes those credentials unrecoverable: re-enter them with `credential set`. Requests for such a workspace return 500 `credential_unavailable` and the server logs the workspace id, provider and key id, never secrets.
@@ -61,6 +61,17 @@ The admin API has no rate limiting and no CORS. Put HTTPS and, for internet-faci
 ## Free tier and quotas
 
 To cap what a workspace can do for free, set `GORI_DEFAULT_MONTHLY_CALLS` (for example `1000`): every workspace then gets that many successful tool calls per UTC month, and further calls get `quota_exceeded` (429) until the month rolls over. When a workspace starts paying, raise its own limit in the dashboard (workspace page, "Set limit"), with `admin workspace quota <workspaceId> --set <n>`, or through `PUT /v1/admin/workspaces/{id}/quota`; `--clear` returns it to the default. Each change is audited (`quota.set`). Usage is counted only while a limit applies. Gori does no billing: you decide the numbers and when to raise them.
+
+## OAuth connections
+
+OAuth connections let a workspace connect accounts (Google first, read-only Gmail tools) and let agents use them. It needs storage, `GORI_ENCRYPTION_KEYS` and `GORI_PUBLIC_URL`; the Cloudflare Worker has no OAuth.
+
+1. Set `GORI_PUBLIC_URL` to the address people reach the dashboard on (for example `https://gori.example`) and restart.
+2. In the provider's console (for Google: a Google Cloud project, OAuth consent screen, then an OAuth client of type "Web application"), add the redirect URI shown on the dashboard's **Providers** page (`<GORI_PUBLIC_URL>/v1/oauth/callback`). Google restricts Gmail permissions to verified apps for public use; a self-hosted app in testing mode can connect the accounts listed as test users.
+3. On the Providers page (or `npm run admin -- oauth provider set google --client-id <id>`, with the secret on stdin or at a hidden prompt), enter the client ID and secret, choose permissions and enable the provider. Changes apply immediately without a restart. The secret is write-only: it is never shown again, and an empty field on later saves keeps the stored one.
+4. On a workspace's **Connections** tab, choose Connect, approve access at the provider, and the account appears. Repeat for more accounts; agents pick one with the `connection` input. Rename or disconnect from the same tab.
+
+Tokens are encrypted like workspace credentials and refresh automatically; if the provider revokes access the connection shows "Needs reconnecting" and calls fail with `connection_expired` until the account is connected again. Disabling or deleting a provider app stops its tools immediately without deleting connections. Disconnecting revokes the grant at the provider on a best-effort basis. Provider setup, renames and disconnects are audited (`oauth_provider.set`, `oauth_provider.delete`, `connection.rename`, `connection.delete`), as are connects and reconnects (`connection.create`, `connection.reconnect`, actor `oauth`) and a grant found revoked (`connection.reauth_required`); no audit event contains a token, code or client secret. Logs carry only the provider and an HTTP status for a failed exchange or refresh.
 
 ## Dashboard
 
