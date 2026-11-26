@@ -32,6 +32,26 @@ docker compose down -v           # stop and delete the database volume
 
 The stack publishes only `127.0.0.1:${PORT:-3000}`; PostgreSQL has no published port. Put HTTPS termination in front of Gori for remote use. The app waits for the PostgreSQL healthcheck before starting and restarts unless stopped.
 
+## Workspace credentials
+
+Each workspace's Naver and Kakao credentials are encrypted at rest with the key ring in `GORI_ENCRYPTION_KEYS`, which is required whenever `GORI_STORAGE` is set. Manage them with `npm run admin -- <command>` (or `docker compose exec gori node apps/server/src/admin.js <command>`): `workspace create|list`, `key create|list|revoke`, `credential set|list|delete|rotate`, `encryption-key generate`. API key tokens and secrets are shown or read once and never logged.
+
+Rotating the encryption key:
+
+1. `npm run admin -- encryption-key generate k2` and put the new entry **first** in `GORI_ENCRYPTION_KEYS`, keeping the old one.
+2. Restart the server, then run `credential rotate`. It prints `rotated <n>` and exits 1, listing workspace and provider, for any row that cannot be decrypted.
+3. Run `credential list <workspaceId>` for each workspace; when every `key` shows the new id, remove the old entry.
+
+Losing every key that encrypted a row makes those credentials unrecoverable: re-enter them with `credential set`. Requests for such a workspace return 500 `credential_unavailable` and the server logs the workspace id, provider and key id, never secrets.
+
+## Usage and audit
+
+Every authenticated `POST /v1/tools/<id>/execute` request that reaches the handler is recorded once, including ones rejected for `payload_too_large`, `invalid_json`, `unknown_tool` or `invalid_input` (a tool name outside the catalog is recorded as `unknown`): principal (operator or workspace), workspace and key ids, tool id, outcome, error code, HTTP status, provider attempts, duration and start time. Every admin action (workspace create, API key create/revoke, credential set/delete/rotate) is recorded as an audit event with the actor, a target id and non-secret details.
+
+Never recorded: requests that fail on a storage error before the handler finishes (they return 500), search text, request bodies, provider responses, tokens, secrets, IP addresses, authentication failures, and catalog reads. A recording failure is logged as `usage_record_failed tool=<id>` and never changes the response. Without storage (and on the Worker) nothing is recorded.
+
+Query with `npm run admin -- usage|executions|audit` (add `--json` for scripting; see the README for flags). Execution rows are kept until pruned with `usage prune --before <date>`; audit events are never pruned by the CLI. Date-only values such as `2026-11-08` mean UTC midnight.
+
 ## Schema changes and upgrades
 
 Migrations run automatically at startup, so an upgrade is: back up, deploy the new image, confirm `/ready`. There is no manual migrate command. If startup reports a checksum mismatch, a committed migration file was edited after it was applied; restore the original file and add a new numbered migration instead.

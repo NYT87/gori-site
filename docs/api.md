@@ -6,7 +6,10 @@ Connecting an AI agent? See [Connecting agents](agents.md) for the tool-calling 
 
 ## Authentication
 
-Every route except `/health` and the Node-only `/ready` requires `Authorization: Bearer <GORI_API_KEY>`. The key is operator-level: there is one credential per deployment and no per-workspace authorization yet. Workspace API keys stored by `@gori/storage` are not accepted by the HTTP layer.
+Every route except `/health` and the Node-only `/ready` requires `Authorization: Bearer <GORI_API_KEY>`. Two kinds of bearer token are accepted:
+
+- **Operator key** (`GORI_API_KEY`): deployment-level access that executes tools with the credentials from the server environment.
+- **Workspace API key** (`gori_` followed by 64 hex characters), Node deployments with `GORI_STORAGE` only: executes tools with that workspace's own provider credentials, never another workspace's and never the operator's. Revoked or unknown keys return 401. Create keys and credentials with the operator CLI (`npm run admin`); the Worker has no store yet and rejects workspace keys with 401.
 
 ## Routes
 
@@ -57,9 +60,11 @@ curl http://localhost:3000/v1/tools/kakao.search_places/execute \
 | 413 | `payload_too_large` | Body over 4096 bytes. |
 | 429 | `provider_error` | Provider returned 429. |
 | 500 | `internal_error` | Unhandled failure in the Node adapter. |
+| 403 | `provider_not_connected` | Workspace key whose workspace has no credentials for the tool's provider. |
+| 500 | `credential_unavailable` | Stored credentials cannot be decrypted (missing or wrong encryption key). |
 | 502 | `provider_error` | Provider returned any other non-2xx status. |
 | 502 | `provider_unavailable` | Network error, timeout, or redirect from the provider. |
-| 503 | `service_not_configured` | `GORI_API_KEY` is unset. |
+| 503 | `service_not_configured` | `GORI_API_KEY` is unset and no storage is configured. |
 | 503 | `provider_not_configured` | Credentials for the tool's provider are unset. |
 | 503 | `storage_unavailable` | `/ready` could not reach the store. |
 

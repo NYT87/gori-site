@@ -20,7 +20,7 @@ Cloudflare can use D1 and Queues behind interfaces. Node deployments, including 
 
 ## Current limits
 
-The current bearer key is operator-level access, not multi-tenant authentication. Workspace and API-key persistence exists but is not consulted by the HTTP layer. There is no provider credential store, quota enforcement, OAuth, or execution history. Provider results retain their original shape. Do not market this initial slice as hosted multi-tenant infrastructure until isolation and lifecycle controls are implemented and tested.
+The operator bearer key is deployment-level access. On Node deployments with storage, workspace API keys authenticate requests and execute tools with the workspace's own encrypted provider credentials; the Worker still accepts only the operator key. There is no HTTP management API (the operator CLI manages workspaces, keys, and credentials), quota enforcement, or OAuth. Node deployments with storage record every authenticated tool execution and every admin action (visible through the operator CLI); quotas and billing export do not exist yet. Provider results retain their original shape. Do not market this initial slice as hosted multi-tenant infrastructure until isolation and lifecycle controls are implemented and tested.
 
 ## Self-hosted core and managed service
 
@@ -79,6 +79,6 @@ Node deployments choose an adapter with `openStore(env)` from `@gori/storage/nod
 
 Tokens are 256 random bits and only SHA-256 digests are persisted. Store methods are internal building blocks: callers must authorize workspace management before invoking them, and `authenticate` is the only source of a caller's workspace identity.
 
-The store is not yet connected to HTTP authentication; the operator key remains the only accepted credential. Before enabling workspace keys for provider execution, introduce workspace-owned provider connections so one workspace cannot use another workspace's credentials. Key scopes, expiry, management routes, encrypted provider secrets, and OAuth follow. Verification status: SQLite persistence, the PostgreSQL adapter and migration runner (with mocks), and a D1 contract double are tested; a live PostgreSQL test runs only when `GORI_TEST_POSTGRES_URL` is set, and the Docker Compose stack has been verified locally; live D1 has not been exercised.
+Workspace API keys authenticate HTTP requests on Node deployments: `handleRequest` receives the store and resolves a principal (operator or workspace) per request. Provider credentials are stored per workspace, encrypted at rest with AES-256-GCM under a versioned key ring (`GORI_ENCRYPTION_KEYS`), bound to their workspace and provider as authenticated data so a moved ciphertext fails to decrypt. A workspace without credentials never falls back to the operator's. Key scopes, expiry, HTTP management routes, and OAuth follow. Verification status: SQLite persistence, the PostgreSQL adapter and migration runner (with mocks), and a D1 contract double are tested; a live PostgreSQL test runs only when `GORI_TEST_POSTGRES_URL` is set, and the Docker Compose stack has been verified locally; live D1 has not been exercised.
 
 Operational details live in [operations](operations.md); the environment reference is in [configuration](configuration.md).

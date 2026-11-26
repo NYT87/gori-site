@@ -7,11 +7,13 @@ All configuration is read from environment variables. The Node app (`apps/server
 | Variable | Required | Used by | Notes |
 | --- | --- | --- | --- |
 | `GORI_API_KEY` | Yes | Node, Worker | Operator bearer token for every route except `/health` and the Node-only `/ready`. Without it protected routes answer 503 `service_not_configured`. Generate with `openssl rand -hex 32`. |
+| `GORI_ENCRYPTION_KEYS` | When `GORI_STORAGE` is set | Node | Key ring for workspace provider credentials: comma-separated `id:base64key` entries (ids of 1–32 letters, digits, `_` or `-`; each key 32 bytes). The first entry encrypts new data; the others only decrypt. Whitespace and trailing commas are ignored. Generate an entry with `npm run admin -- encryption-key generate [id]`. Startup fails without it, and error messages never include key material. |
+| `GORI_ACTOR` | No | Node CLI | Name recorded as the actor of admin actions in the audit log when `--actor` is not passed. Defaults to `cli:<operating system user>`. |
 | `PORT` | No | Node | Listen port, default `3000`. Compose publishes it on `127.0.0.1` only. |
 
 ## Providers
 
-Provider credentials belong to the deployment operator. A tool whose credentials are missing returns 503 `provider_not_configured`; other tools keep working.
+Provider credentials for the operator key (`GORI_API_KEY`) come from the variables below. A tool whose credentials are missing returns 503 `provider_not_configured`; other tools keep working. Requests authenticated with a workspace API key never use these variables: they use that workspace's own encrypted credentials (see [operations](operations.md#workspace-credentials)) and fail with 403 `provider_not_connected` when none are stored.
 
 | Variable | Tool | Notes |
 | --- | --- | --- |
