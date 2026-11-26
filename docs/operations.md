@@ -64,7 +64,7 @@ The operator dashboard is a set of static files served by the Node server at `/d
 
 Every dashboard response carries `Content-Security-Policy` (`default-src 'none'`, scripts, styles, images and connections only from the same origin, no framing), `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`. If a reverse proxy strips or replaces these headers, the dashboard still works but loses that protection.
 
-The design system under `apps/dashboard/public/vendor/` is a pinned, committed copy, so building and running Gori needs no private package token. To update it, a maintainer edits `apps/dashboard/vendor/versions.json`, runs `NODE_AUTH_TOKEN=<GitHub token with read:packages> npm run vendor:dashboard`, and commits the changed files; a test fails if the files and the pinned versions disagree or a vendored file was edited by hand.
+The design system under `apps/dashboard/public/vendor/` is a pinned, committed copy, so building and running Gori needs no private package token. The copy carries the design system's MIT licence and the notices for the icon artwork (`LICENSE`, `THIRD-PARTY-NOTICES.md`); keep both with it. To update it, a maintainer edits `apps/dashboard/vendor/versions.json`, runs `NODE_AUTH_TOKEN=<GitHub token with read:packages> npm run vendor:dashboard`, and commits the changed files; a test fails if the files and the pinned versions disagree or a vendored file was edited by hand.
 
 ## Schema changes and upgrades
 
