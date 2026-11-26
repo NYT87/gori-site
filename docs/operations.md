@@ -52,6 +52,12 @@ Never recorded: requests that fail on a storage error before the handler finishe
 
 Query with `npm run admin -- usage|executions|audit` (add `--json` for scripting; see the README for flags). Execution rows are kept until pruned with `usage prune --before <date>`; audit events are never pruned by the CLI. Date-only values such as `2026-11-08` mean UTC midnight.
 
+## Admin API
+
+`GORI_ADMIN_KEY` turns on `/v1/admin/*` (see the [API](api.md#admin-api)). Treat it like a root credential: it can create keys and replace provider credentials. It is separate from `GORI_API_KEY` so a leaked agent key cannot manage the platform. Rotating it means setting a new value (at least 32 characters) and restarting; there is no overlap period, so update the dashboard and scripts together. Unset it to switch the admin API off.
+
+The admin API has no rate limiting and no CORS. Put HTTPS and, for internet-facing deployments, request limiting or an IP allow-list in front of it, and serve any browser dashboard from the same origin. Admin actions are audited with the actor `admin-key`.
+
 ## Schema changes and upgrades
 
 Migrations run automatically at startup, so an upgrade is: back up, deploy the new image, confirm `/ready`. There is no manual migrate command. If startup reports a checksum mismatch, a committed migration file was edited after it was applied; restore the original file and add a new numbered migration instead.

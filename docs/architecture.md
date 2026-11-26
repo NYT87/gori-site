@@ -20,7 +20,11 @@ Cloudflare can use D1 and Queues behind interfaces. Node deployments, including 
 
 ## Current limits
 
-The operator bearer key is deployment-level access. On Node deployments with storage, workspace API keys authenticate requests and execute tools with the workspace's own encrypted provider credentials; the Worker still accepts only the operator key. There is no HTTP management API (the operator CLI manages workspaces, keys, and credentials), quota enforcement, or OAuth. Node deployments with storage record every authenticated tool execution and every admin action (visible through the operator CLI); quotas and billing export do not exist yet. Provider results retain their original shape. Do not market this initial slice as hosted multi-tenant infrastructure until isolation and lifecycle controls are implemented and tested.
+The operator bearer key is deployment-level access. On Node deployments with storage, workspace API keys authenticate requests and execute tools with the workspace's own encrypted provider credentials; the Worker still accepts only the operator key. Workspaces, keys and credentials are managed through an admin API (`/v1/admin/*`, enabled by a separate `GORI_ADMIN_KEY`) and the operator CLI; both call the same admin service. There is no quota enforcement or OAuth. Node deployments with storage record every authenticated tool execution and every admin action (visible through the operator CLI); quotas and billing export do not exist yet. Provider results retain their original shape. Do not market this initial slice as hosted multi-tenant infrastructure until isolation and lifecycle controls are implemented and tested.
+
+## Admin service
+
+Management goes through one business layer, `@gori/core/admin`, that knows nothing about HTTP: input validation, authorization, existence checks, cursor pagination, store and audit calls, and `AdminError` codes. Adapters stay thin: the Node server maps routes to service methods and error codes to HTTP statuses, and the operator CLI calls the same methods, so rules cannot drift between them. Every call takes an admin principal (`{ kind, actor, role }`). Today `GORI_ADMIN_KEY` resolves to one owner principal; per-user accounts will add another resolver returning the same shape, and `authorize(principal, action)` is the single place roles will be decided. Audit events record the principal's `actor`.
 
 ## Self-hosted core and managed service
 

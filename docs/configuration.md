@@ -8,6 +8,7 @@ All configuration is read from environment variables. The Node app (`apps/server
 | --- | --- | --- | --- |
 | `GORI_API_KEY` | Yes | Node, Worker | Operator bearer token for every route except `/health` and the Node-only `/ready`. Without it protected routes answer 503 `service_not_configured`. Generate with `openssl rand -hex 32`. |
 | `GORI_ENCRYPTION_KEYS` | When `GORI_STORAGE` is set | Node | Key ring for workspace provider credentials: comma-separated `id:base64key` entries (ids of 1–32 letters, digits, `_` or `-`; each key 32 bytes). The first entry encrypts new data; the others only decrypt. Whitespace and trailing commas are ignored. Generate an entry with `npm run admin -- encryption-key generate [id]`. Startup fails without it, and error messages never include key material. |
+| `GORI_ADMIN_KEY` | No | Node | Enables the admin API (`/v1/admin/*`, see [API](api.md#admin-api)) when `GORI_STORAGE` is set. At least 32 characters, different from `GORI_API_KEY`, and not shaped like a workspace key (`gori_` plus 64 hex characters); the server refuses to start otherwise, naming the variable but never its value. Unset or empty keeps the admin API off: every `/v1/admin/*` path answers 404. Generate with `openssl rand -hex 32`. |
 | `GORI_ACTOR` | No | Node CLI | Name recorded as the actor of admin actions in the audit log when `--actor` is not passed. Defaults to `cli:<operating system user>`. |
 | `PORT` | No | Node | Listen port, default `3000`. Compose publishes it on `127.0.0.1` only. |
 
