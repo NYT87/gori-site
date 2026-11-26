@@ -20,6 +20,7 @@ No build step, bundler, formatter, or linter is configured. Use ES modules, two-
 | `packages/storage` | `@gori/storage` | Store contract, migrations, SQLite, PostgreSQL, and D1 adapters. |
 | `apps/server` | `@gori/server` | Node HTTP adapter used by Docker. Opens storage, adds `/ready`, handles signals. |
 | `apps/worker` | `@gori/worker` | Cloudflare Worker entry point. |
+| `apps/dashboard` | `@gori/dashboard` | Operator dashboard: static files in `public/` (plain ES modules, no build step), a vendored design-system copy in `public/vendor/`, and its tests. |
 | `docs/` | | Architecture, API, configuration, operations, this guide. |
 
 Shared packages never import application code. Applications import packages only through their `exports` map.
@@ -30,6 +31,8 @@ Shared packages never import application code. Applications import packages only
 | --- | --- | --- |
 | `packages/core/test` | Routing, auth, validation, provider calls with a fake `fetch`, error redaction | Nothing |
 | `apps/worker/test` | Worker adapter resolves the core and passes bindings | Nothing |
+| `apps/dashboard/test` | Router, API client, i18n catalogs (en and ko have identical keys, every `t('…')` key exists), the no-`innerHTML` scan, the vendored design-system manifest, and every view against a fake admin API with `jsdom` (a dev-only dependency) | Nothing |
+| `apps/server/test/static.test.js` | The `/dashboard` static handler: content types, security headers, ETags, path-traversal attempts, symlinks, and that it is off without the admin key | Nothing |
 | `packages/storage/test/storage.test.js` | Real SQLite persistence, D1 contract double, migration loader, `openStore` selection | Nothing |
 | `packages/storage/test/postgres.test.js` | Placeholder translation, migration transaction and rollback with a mock pool | Nothing |
 | `packages/storage/test/postgres.integration.test.js` | Live migrations and persistence | `GORI_TEST_POSTGRES_URL` |

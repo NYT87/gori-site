@@ -49,6 +49,10 @@ Use unique event IDs and idempotent aggregation so redelivery cannot double-coun
 
 Usage reports and quota enforcement are separate concerns: reports may lag, while admission controls need concurrency-safe counters. Self-hosting defaults to no commercial limits, with optional operator-defined limits and provider rate-limit protection.
 
+## Dashboard
+
+`apps/dashboard` is a framework-free, build-free operator console: plain ES modules and CSS served as static files by the Node server at `/dashboard/`, on the same origin as the API (so the admin API needs no CORS). It talks only to `/v1/admin`, signs in with the admin key (kept in `sessionStorage`), and renders server data with text nodes only, never as HTML. It reuses the nyt87 design system through a pinned, committed copy under `public/vendor/`, so a self-hosted build needs no private package. Screens: overview (usage, errors, latency), workspaces with API keys and credentials, executions, and the audit log. Per-user accounts will change how the principal is resolved on the server, not these screens. The Worker deployment has no admin API and therefore no dashboard yet.
+
 ## Dashboard localization
 
 English (`en`) is the default interface language; Korean (`ko`) is a supported locale. Keep all user-facing strings in locale catalogs, use stable translation keys, and fall back to English for missing translations. Persist an explicit language selection per user; use English before a preference is set. Format dates and numbers with locale-aware APIs and keep timezone selection separate from language.
@@ -65,7 +69,7 @@ All boundaries described above are planned architecture. The current implementat
 
 npm workspaces manage `apps/*` and `packages/*`, with one root lockfile. `packages/core` owns portable execution and API code. `packages/storage` owns persistence, migrations, and database adapters. `apps/server` and `apps/worker` adapt that core to Node/Docker and Cloudflare respectively. Applications depend on shared packages through package exports; shared packages must not import application code. Keep deployment configuration at the root so both targets use the same checkout and lockfile.
 
-Create additional workspaces only as their implementation begins. The future dashboard belongs in `apps/dashboard`; usage and optional billing can become shared packages with explicit interfaces. No dashboard or billing workspace exists yet.
+Create additional workspaces only as their implementation begins. The operator dashboard lives in `apps/dashboard`; usage and optional billing can become shared packages with explicit interfaces. No billing workspace exists yet.
 
 ## Storage
 

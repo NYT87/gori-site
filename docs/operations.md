@@ -58,6 +58,14 @@ Query with `npm run admin -- usage|executions|audit` (add `--json` for scripting
 
 The admin API has no rate limiting and no CORS. Put HTTPS and, for internet-facing deployments, request limiting or an IP allow-list in front of it, and serve any browser dashboard from the same origin. Admin actions are audited with the actor `admin-key`.
 
+## Dashboard
+
+The operator dashboard is a set of static files served by the Node server at `/dashboard/`, on the same port as the API, and only when the admin API is enabled (`GORI_ADMIN_KEY` set and `GORI_STORAGE` configured); otherwise every `/dashboard` path answers 404. Signing in asks for the admin key, which the browser keeps in `sessionStorage` for the life of the tab and sends only as a bearer token to `/v1/admin`. Signing out or closing the tab discards it. There is no throttling of failed sign-ins (the key is at least 32 characters): put request limiting in front of the server on public networks, as for the admin API.
+
+Every dashboard response carries `Content-Security-Policy` (`default-src 'none'`, scripts, styles, images and connections only from the same origin, no framing), `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`. If a reverse proxy strips or replaces these headers, the dashboard still works but loses that protection.
+
+The design system under `apps/dashboard/public/vendor/` is a pinned, committed copy, so building and running Gori needs no private package token. To update it, a maintainer edits `apps/dashboard/vendor/versions.json`, runs `NODE_AUTH_TOKEN=<GitHub token with read:packages> npm run vendor:dashboard`, and commits the changed files; a test fails if the files and the pinned versions disagree or a vendored file was edited by hand.
+
 ## Schema changes and upgrades
 
 Migrations run automatically at startup, so an upgrade is: back up, deploy the new image, confirm `/ready`. There is no manual migrate command. If startup reports a checksum mismatch, a committed migration file was edited after it was applied; restore the original file and add a new numbered migration instead.
