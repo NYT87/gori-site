@@ -1,4 +1,5 @@
 // Pure rendering helpers for the public site. No filesystem access here, so tests can call them directly.
+import { icon } from '@nyt87/icons';
 import { Marked, Renderer } from 'marked';
 
 export const REPO = 'https://github.com/NYT87/gori';
@@ -69,14 +70,16 @@ export function renderDoc(markdown, fromFile) {
   return { title: title || fromFile, html, outline };
 }
 
+// Icons come from the shared @nyt87/icons set. The `i` class keeps the site's own sizing and stroke rules working.
 const ICON = {
-  check: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
-  later: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
-  copy: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
-  arrow: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
-  sun: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"></svg>',
-  plus: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  check: icon('check', { class: 'i' }),
+  later: icon('clock', { class: 'i' }),
+  copy: icon('copy', { class: 'i' }),
+  arrow: icon('arrow-right', { class: 'i' }),
+  plus: icon('plus', { class: 'i' }),
 };
+// The theme toggle carries both icons; client.js only shows the one for the current theme.
+const THEME_ICONS = `${icon('sun', { class: 'i' }).replace('<svg ', '<svg data-theme-icon="dark" ')}${icon('moon', { class: 'i' }).replace('<svg ', '<svg data-theme-icon="light" hidden ')}`;
 export { ICON };
 
 const li = (key, text, kind = 'check') => `<li${kind === 'later' ? ' class="later"' : ''}>${ICON[kind]}<span data-i18n="${key}">${text}</span></li>`;
@@ -175,7 +178,7 @@ export function layout({ title, description, root, page, body, path }) {
         <button type="button" data-lang="en" aria-pressed="true">EN</button>
         <button type="button" data-lang="ko" aria-pressed="false" lang="ko">한국어</button>
       </div>
-      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme">${ICON.sun}</button>
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme">${THEME_ICONS}</button>
       <button class="ds-header__menu" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="Open navigation menu" data-label-open="Open navigation menu" data-label-close="Close navigation menu"><span class="ds-header__burger" aria-hidden="true"></span></button>
     </div>
   </div>

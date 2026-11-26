@@ -180,3 +180,30 @@ test('the support plan offers an Email us button instead of showing the address'
   assert.doesNotMatch(support, />nyt87@proton\.me</, 'the address is not displayed');
   assert.doesNotMatch(html, /contact-addr|Copy email address/, 'no copy-the-address control');
 });
+
+// Icons come from @nyt87/icons: no hand-written paths in the site's own code.
+import { icon } from '@nyt87/icons';
+import { ICON } from '../src/render.js';
+
+test('the site icons are the shared @nyt87/icons ones', () => {
+  assert.equal(ICON.check, icon('check', { class: 'i' }));
+  assert.equal(ICON.later, icon('clock', { class: 'i' }));
+  assert.equal(ICON.copy, icon('copy', { class: 'i' }));
+  assert.equal(ICON.arrow, icon('arrow-right', { class: 'i' }));
+  assert.equal(ICON.plus, icon('plus', { class: 'i' }));
+  assert.match(ICON.check, /class="ds-icon i"/);
+});
+
+test('the theme toggle ships both icons from the package and the script only toggles them', async () => {
+  const html = layout({ title: 'T', description: 'd', root: '', page: 'home', body: '', path: '' });
+  const button = html.match(/<button[^>]*id="theme-toggle"[\s\S]*?<\/button>/)[0];
+  assert.ok(button.includes('data-theme-icon="dark"') && button.includes('data-theme-icon="light"'), 'each icon says which theme shows it');
+  assert.equal((button.match(/<svg/g) ?? []).length, 2);
+  assert.ok(button.includes(icon('sun').match(/<path[^>]*>|<circle[^>]*>/)[0]), 'the sun artwork is the package one');
+  assert.ok(button.includes(icon('moon').match(/<path[^>]*>/)[0]), 'the moon artwork is the package one');
+  const client = await readFile(new URL('../src/client.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(client, /M12 2v2M12 20v2|M12 3a6 6 0 0 0 9 9/, 'client.js carries no icon artwork');
+  // SVG elements have no `hidden` property (only HTML elements do), so assigning it silently does nothing.
+  assert.match(client, /svg\.toggleAttribute\('hidden'/);
+  assert.doesNotMatch(client, /svg\.hidden\s*=/);
+});

@@ -309,3 +309,6 @@ html:not([lang="ko"]) .ko-only { display: none; }
 .banner-ko { color: var(--fg-muted); font-size: clamp(14px, 2vw, 24px); }
 .brand-banner svg { width: clamp(80px, 17vw, 200px); flex-shrink: 0; }
 @media (max-width: 480px) { .brand-banner { gap: 16px; padding: 20px; } .brand-banner svg { width: 64px; } }
+
+/* The theme toggle holds two icons; the hidden attribute does not hide SVG elements on its own. */
+.icon-btn svg[hidden] { display: none; }
