@@ -43,7 +43,7 @@ export async function build(outDir = join(repoRoot, '_site')) {
     { src: 'index.html', out: 'index.html', page: 'home', title: 'Gori',
       description: 'The open-source tool layer for AI agents: Naver, Kakao, and other Korean services as typed tools over MCP or HTTP. Self-host on Docker or Cloudflare Workers.' },
     { src: 'agents.html', out: 'agents.html', page: 'agents', title: 'Gori for agents',
-      description: 'Connect AI agents to Naver, Kakao, and other Korean services: typed tools over HTTP tool calling today, MCP soon.' },
+      description: 'Connect AI agents to Naver, Kakao, and other Korean services: typed tools over MCP or HTTP tool calling.' },
     { src: 'pricing.html', out: 'pricing.html', page: 'pricing', title: 'Pricing',
       description: 'Gori is free to self-host under AGPL-3.0. Gori Cloud is coming soon; support is available for teams.' },
   ];

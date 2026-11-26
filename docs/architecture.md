@@ -11,7 +11,7 @@ Use Web Request, Response, fetch, and Web Crypto in shared code. Keep Node-speci
 1. Introduce workspaces, scoped API keys, and persistent connections. The storage interface, shared migrations, contract tests, and SQLite, D1, and PostgreSQL adapters exist (see Storage below); wiring workspace keys into HTTP authentication, key scopes and expiry, management routes, and encrypted provider tokens with a separately managed encryption key remain open.
 2. Add Naver and Kakao OAuth connection flows with expiring one-use state, redirect allowlists, token refresh, revocation, and strict workspace ownership checks. Provider permissions determine available actions; login alone does not grant arbitrary service access.
 3. Add execution records, credential-redacted audit events, per-workspace quotas, and provider-aware rate limits. Retry only safe operations; require idempotency controls before adding writes.
-4. Expose tool discovery and execution through MCP and a typed SDK, backed by the same authorization layer.
+4. Expose tool discovery and execution through MCP and a typed SDK, backed by the same authorization layer. MCP is implemented (stateless Streamable HTTP at `/mcp`, `tools` only); the typed SDK is open.
 5. Build an English-first dashboard with Korean localization for connections, tools, API keys, and execution history. Serve it alongside the API on either deployment target.
 
 ## Deployment parity
@@ -20,7 +20,7 @@ Cloudflare can use D1 and Queues behind interfaces. Node deployments, including 
 
 ## Current limits
 
-The operator bearer key is deployment-level access. On Node deployments with storage, workspace API keys authenticate requests and execute tools with the workspace's own encrypted provider credentials; the Worker still accepts only the operator key. Workspaces, keys and credentials are managed through an admin API (`/v1/admin/*`, enabled by a separate `GORI_ADMIN_KEY`) and the operator CLI; both call the same admin service. There is no quota enforcement or OAuth. Node deployments with storage record every authenticated tool execution and every admin action (visible through the operator CLI); quotas and billing export do not exist yet. Provider results retain their original shape. Do not market this initial slice as hosted multi-tenant infrastructure until isolation and lifecycle controls are implemented and tested.
+The operator bearer key is deployment-level access. On Node deployments with storage, workspace API keys authenticate requests and execute tools with the workspace's own encrypted provider credentials; the Worker still accepts only the operator key. Workspaces, keys and credentials are managed through an admin API (`/v1/admin/*`, enabled by a separate `GORI_ADMIN_KEY`) and the operator CLI; both call the same admin service. There is no quota enforcement or OAuth. MCP clients connect at `/mcp` with the same keys; each tool call is executed and recorded through the same code as the HTTP route, with a `channel` (`http` or `mcp`) on the usage record. Node deployments with storage record every authenticated tool execution and every admin action (visible through the operator CLI); quotas and billing export do not exist yet. Provider results retain their original shape. Do not market this initial slice as hosted multi-tenant infrastructure until isolation and lifecycle controls are implemented and tested.
 
 ## Admin service
 

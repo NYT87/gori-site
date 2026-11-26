@@ -2,7 +2,7 @@
 
 The same handler serves the Node server and the Cloudflare Worker. Responses are JSON. Successful executions return `{ "data": ... }`; failures return `{ "error": "<code>" }`.
 
-Connecting an AI agent? See [Connecting agents](agents.md) for the tool-calling pattern and the planned MCP server.
+Connecting an AI agent? See [Connecting agents](agents.md) for the tool-calling pattern and the [MCP server](#mcp).
 
 ## Authentication
 
@@ -30,7 +30,7 @@ The Worker does not expose this route; it falls through to authentication and `n
 
 ### `GET /v1/tools`
 
-Returns `{ "tools": [...] }`. Each tool has `id`, `provider`, a Korean `description`, and a JSON Schema `inputSchema`. Current tools: `naver.search_news` and `kakao.search_places`, both taking `{ "query": string }` of 1 to 200 characters with no extra properties.
+Returns `{ "tools": [...] }`. Each tool has `id`, `provider`, an English `title` and `summary`, a Korean `description`, and a JSON Schema `inputSchema`. Current tools: `naver.search_news` and `kakao.search_places`, both taking `{ "query": string }` of 1 to 200 characters with no extra properties.
 
 ### `POST /v1/tools/{id}/execute`
 
@@ -42,9 +42,34 @@ curl http://localhost:3000/v1/tools/kakao.search_places/execute \
   -H 'Content-Type: application/json' -d '{"query":"성수 카페"}'
 ```
 
+### `POST /mcp`
+
+The [MCP server](#mcp). Same authentication as the routes above: a missing or wrong key is `401` with `WWW-Authenticate: Bearer realm="gori"` and a plain JSON body, before any JSON-RPC is read.
+
+## MCP
+
+`POST /mcp` speaks the Model Context Protocol over stateless Streamable HTTP: one JSON-RPC 2.0 message per request, always answered with `application/json`. There are no sessions (Gori never sends `Mcp-Session-Id`) and no streaming. Protocol versions `2025-11-25`, `2025-06-18` and `2025-03-26` are supported; a request without `MCP-Protocol-Version` is treated as `2025-03-26`. Only the `tools` capability exists.
+
+| Request | Response |
+| --- | --- |
+| Any method except `POST` | `405`, `Allow: POST` |
+| `Origin` header not listed in `GORI_MCP_ALLOWED_ORIGINS` | `403 { "error": "origin_not_allowed" }`; a request with no `Origin` is accepted |
+| Unsupported `MCP-Protocol-Version` | `400`, JSON-RPC `-32600` |
+| Body over 16 384 bytes | `413`, JSON-RPC `-32600` |
+| Invalid JSON, a batch (array), or a malformed message | `400`, JSON-RPC `-32700` or `-32600` |
+| A notification (no `id`), for example `notifications/initialized` | `202`, empty body |
+
+Methods: `initialize`, `ping`, `tools/list` (every catalog tool in one page) and `tools/call`; any other method is JSON-RPC `-32601`.
+
+**Tool names.** `.` becomes `_`: `naver.search_news` is `naver_search_news`. The description combines the English summary, the Korean description and the canonical ID.
+
+**`tools/call`.** `params.name` is the MCP name and `params.arguments` an object (default `{}`). Success returns the provider JSON as one text item plus `structuredContent`. Tool failures are normal results with `isError: true` and one text item `<code>: <fixed sentence>`; provider response bodies, your arguments and secrets never appear in it. The codes are the [error codes](#error-codes) below (`invalid_input` includes the tool's input schema so the model can correct the call). An unknown tool name or a malformed `params` is a JSON-RPC `-32602` error.
+
+**Usage.** Each `tools/call` is recorded like an HTTP execution, with the channel `mcp` instead of `http` (the `channel` field of [`GET /v1/admin/executions`](#admin-api)). `initialize`, `ping`, `tools/list`, notifications and rejected requests record nothing.
+
 ## Limits
 
-- Request bodies above 4096 bytes are rejected. The Node server closes with an empty 413 while reading; the shared handler counts streamed bytes and cancels reading as soon as the limit is exceeded, returning 413 `payload_too_large`.
+- Request bodies above 4096 bytes are rejected (16 384 for `/mcp`). The Node server closes with an empty 413 while reading; the shared handler counts streamed bytes and cancels reading as soon as the limit is exceeded, returning 413 `payload_too_large`.
 - Provider calls time out after 10 seconds and do not follow redirects.
 - No rate limiting or quotas are enforced yet. Provider 429 responses are passed through as 429.
 
@@ -91,7 +116,7 @@ Authenticate with `Authorization: Bearer <GORI_ADMIN_KEY>`. This key is separate
 | `DELETE /v1/admin/workspaces/{id}/credentials/{provider}` |  | `{ provider }`; succeeds when nothing was stored |
 | `POST /v1/admin/credentials/rotate` |  | `{ rotated, failed: [{ workspace_id, provider, key_id }] }`; 200 even when some rows cannot be decrypted |
 | `GET /v1/admin/usage?workspace&since&until&by` |  | `[{ key, count, success, error, avg_duration_ms }]`; `by` is `day` (default), `tool`, `outcome` or `workspace` |
-| `GET /v1/admin/executions?workspace&since&until&limit&cursor` |  | `{ items, next_cursor }`, newest first |
+| `GET /v1/admin/executions?workspace&since&until&limit&cursor` |  | `{ items, next_cursor }`, newest first; each item has a `channel` (`http` or `mcp`) |
 | `GET /v1/admin/audit?workspace&since&until&limit&cursor` |  | `{ items, next_cursor }`, newest first |
 
 - `workspace` omitted means every workspace; `workspace=operator` selects operator rows.

@@ -9,7 +9,7 @@ export const COMPANY_URL = 'https://nyt87.github.io';
 
 // User-facing docs, in sidebar order. Anything else in docs/ (design specs, brand guidelines) stays private.
 export const PUBLIC_DOCS = [
-  { file: 'agents.md', summary: 'Connect an AI agent: tool calling over HTTP today, MCP soon.', ko: '에이전트 연결' },
+  { file: 'agents.md', summary: 'Connect an AI agent: MCP or tool calling over HTTP.', ko: '에이전트 연결' },
   { file: 'api.md', summary: 'Endpoints, authentication, limits, and every error code.', ko: 'HTTP API' },
   { file: 'configuration.md', summary: 'Every environment variable for Node, Docker, and Cloudflare.', ko: '설정 레퍼런스' },
   { file: 'operations.md', summary: 'Running the Node deployment: health checks, upgrades, backups.', ko: '운영' },

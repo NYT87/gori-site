@@ -79,16 +79,16 @@ const message = await client.beta.messages.toolRunner({
         <a class="more-link" href="{{root}}docs/agents.html#tool-calling-over-http"><span data-i18n="agents.http.more">Full example with setup</span>{{icon.arrow}}</a>
       </article>
       <article class="path">
-        <div class="feature-top"><h3 data-i18n="agents.mcp.t">MCP server</h3><span class="status planned" data-i18n="st.soon">Coming soon</span></div>
+        <div class="feature-top"><h3 data-i18n="agents.mcp.t">MCP server</h3><span class="status ok" data-i18n="st.ok">Coming soon</span></div>
         <p data-i18n="agents.mcp.d">Connect Claude Code, Cursor, or any MCP client to your Gori URL with your Gori key. Tools appear in the agent with no code. Runs on Docker and Cloudflare Workers.</p>
         <div class="cmd">
-          <div class="cmd-head"><span data-i18n="agents.mcp.preview">Planned setup · preview</span>
+          <div class="cmd-head"><span data-i18n="agents.mcp.preview">Setup</span>
             <button class="icon-btn copy" type="button" data-copy-from="code-mcp" aria-label="Copy command">{{icon.copy}}</button></div>
 <pre id="code-mcp">claude mcp add --transport http gori \
   https://&lt;your-gori&gt;/mcp \
   --header "Authorization: Bearer &lt;key&gt;"</pre>
         </div>
-        <p class="path-note" data-i18n="agents.mcp.note">Designed, not released yet. Until it ships, use tool calling over HTTP; the tool names and errors will match.</p>
+        <p class="path-note" data-i18n="agents.mcp.note">Stateless Streamable HTTP with the same keys as the HTTP API. Tool names use underscores (naver_search_news) and failures come back as tool errors the model can read.</p>
       </article>
     </div>
   </div>

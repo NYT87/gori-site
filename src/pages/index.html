@@ -40,7 +40,7 @@
     </div>
     <div class="agent-grid">
       <a class="agent-card" href="{{root}}agents.html">
-        <div class="feature-top"><h3 data-i18n="home.agents.mcp.t">MCP server</h3><span class="status planned" data-i18n="st.soon">Coming soon</span></div>
+        <div class="feature-top"><h3 data-i18n="home.agents.mcp.t">MCP server</h3><span class="status ok" data-i18n="st.ok">Coming soon</span></div>
         <p data-i18n="home.agents.mcp.d">Point Claude Code, Cursor, or any MCP client at your Gori URL. Tools show up in the agent, no code needed.</p>
         <code>claude mcp add --transport http gori …/mcp</code>
       </a>
@@ -97,7 +97,7 @@ KAKAO_REST_API_KEY=…</div>
       <div class="step">
         <div class="step-n">03</div>
         <h3 data-i18n="how.s3.t">Call tools from your agent</h3>
-        <p data-i18n="how.s3.d">Give your agent the catalog as tools and forward its calls to Gori. Inputs are validated against each tool's JSON Schema. MCP support is coming soon.</p>
+        <p data-i18n="how.s3.d">Give your agent the catalog as tools and forward its calls to Gori. Inputs are validated against each tool's JSON Schema. Or connect over MCP: Claude Code, Cursor and other MCP clients list the tools themselves.</p>
         <div class="snippet">GET  /v1/tools
 POST /v1/tools/{id}/execute</div>
       </div>

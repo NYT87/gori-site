@@ -85,7 +85,8 @@ test('build writes every public page and no private docs', async () => {
     }
     assert.match(agents, /claude-opus-5-5/);
     const agentsDoc = await readFile(join(out, 'docs/agents.html'), 'utf8');
-    assert.match(agentsDoc, /Status: planned/);
+    assert.match(agentsDoc, /claude mcp add --transport http gori/);
+    assert.doesNotMatch(agentsDoc, /Status: planned|not working yet/);
     assert.match(agentsDoc, /href="api.html#error-codes"/);
     const api = await readFile(join(out, 'docs/api.html'), 'utf8');
     assert.match(api, /<h1>HTTP API<\/h1>/);

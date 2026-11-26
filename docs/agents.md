@@ -7,7 +7,7 @@ There are two ways to connect an agent:
 | Path | Status | Use when |
 | --- | --- | --- |
 | [Tool calling over HTTP](#tool-calling-over-http) | Available | You run your own agent loop with Claude, OpenAI, or any model that supports tool use. |
-| [MCP server](#mcp-server) | Planned | Your agent or IDE speaks the Model Context Protocol (Claude Code, Cursor, MCP SDK clients). |
+| [MCP server](#mcp-server) | Available | Your agent or IDE speaks the Model Context Protocol (Claude Code, Cursor, MCP SDK clients). |
 
 ## How an agent uses Gori
 
@@ -92,17 +92,13 @@ See the [HTTP API](api.md) for every route, limit, and error code.
 
 ## MCP server
 
-**Status: planned.** The MCP endpoint described here is designed but not yet available; Gori does not serve `/mcp` today. Use [tool calling over HTTP](#tool-calling-over-http) until it ships.
+Gori serves the Model Context Protocol at `https://<your-gori>/mcp` on both the Docker and Cloudflare Workers deployments (the Worker accepts the operator key only). It uses the Streamable HTTP transport, stateless, with the same `Authorization: Bearer <key>` as the HTTP API: an operator key or a workspace key. See [HTTP API: MCP](api.md#mcp) for the protocol details.
 
-The planned server:
-
-- Runs at `https://<your-gori>/mcp` on both the Docker and Cloudflare Workers deployments.
-- Uses the Streamable HTTP transport, stateless, with the same `Authorization: Bearer <key>` as the HTTP API.
 - Lists every catalog tool with underscore names (`naver_search_news`, `kakao_search_places`), an English summary, and the original input schema.
-- Returns provider data as structured content, and Gori error codes as tool errors the model can read and act on.
-- Records MCP calls in usage history alongside HTTP executions.
+- Returns provider data as structured content, and Gori error codes as tool errors the model can read and act on (for example `provider_not_connected: this workspace has no naver credentials. Ask the Gori operator to add them.`).
+- Records MCP calls in usage history next to HTTP executions, marked with the channel `mcp`.
 
-Planned client setup (preview, not working yet):
+Client setup:
 
 ```sh
 # Claude Code
@@ -121,4 +117,4 @@ claude mcp add --transport http gori https://<your-gori>/mcp \
 }
 ```
 
-The second snippet is the shape Cursor uses in `mcp.json`. This page will be updated when the MCP server is released.
+The second snippet is the shape Cursor uses in `mcp.json`. Any MCP client that supports Streamable HTTP and a custom `Authorization` header works the same way. Browsers are refused unless their origin is listed in `GORI_MCP_ALLOWED_ORIGINS`; agents and IDEs send no `Origin` header and are always accepted.
